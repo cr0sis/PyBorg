@@ -1,9 +1,9 @@
-HOST = "irc.libera.chat"
+HOST = "irc.server.chat"
 PORT = 6667
-NICK = "cr0bot"                                    #
+NICK = "yourbot"                                    #
 PASS = 'derp'
-USER = "cr0bot@cr0sis 0 * timothy"
-CHAN = "#bakedbeans"
+USER = "yourbot@hisname 0 * hisname"
+CHAN = "#chan"
 RATE = 0.6                                # messages per seccond
 COMMANDS = [
     [r':\.bots\r\n$', utility.report_in],
