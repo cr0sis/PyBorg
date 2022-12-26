@@ -22,13 +22,18 @@ except Exception as e:
 
 def bot_loop():
     while connected:
-        response = s.recv(1024).decode("utf-8")
+        try:
+            response = s.recv(1024).decode("utf-8")
+        except Exception as e:
+            print("An error occurred while receiving a message:", str(e))
+            break
         if response[0:4] == "PING":
             print(response)
             s.send(("PONG " + response.split()[1] + "\r\n").encode("utf-8"))
             print("Pong")
         else:
             username = re.search(r"\w+", response).group(0)
+            response = response.rstrip("\r\n")
             message = CHAT_MSG.sub("", response)
             print((username + ": " + response).encode("utf-8"))
             for pattern in config.COMMANDS:
