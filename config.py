@@ -1,3 +1,4 @@
+import utility
 HOST = "irc.server.chat"
 PORT = 6667
 NICK = "yourbot"                                    #
