@@ -18,41 +18,33 @@ def chat(sock, msg):
     """
     sock.send(("PRIVMSG {} :{}\r\n".format(config.CHAN, msg)).encode("UTF-8"))
 
-def report_in(u, m):
+def report_in(msg):
     return "Reporting *hic* in! [" + u'\U0001F40D' + "] https://cr0s.is/cr0bot.php"
 
-def check_time(u, m):
+def check_time(msg):
     curr_time = time.strftime("%H:%M:%S", time.localtime())
     return curr_time
 
-def temp(u, m):
+def temp(msg):
     cpu = CPUTemperature()
     return "Temp: " + str(round(cpu.temperature, 1)) + "°C"
 
-
-def check_date(u, m):
+def check_date(msg):
     today = date.today()
     d2 = today.strftime("%B %d, %Y")
     return d2 
-'''
-def check_date(u, m):
-    today = date.today()
-    d2 = today.strftime("%B %d, %Y")
-    # Split the string into a list of words
-    words = m.split()
-    # Get the 5th word
-    fifth_word = words[4]
-    return d2 + fifth_word
-'''
 
-def random_choice(u, m):
+
+def random_choice(msg):
+    u = msg["user"]
+    m = msg["message"]
     try:
         # Split the string into a list of words
         words = m.split()
         # Get the part of the list that contains the words before the | character
-        first_option = words[4]
+        first_option = words[1]
         # Get the part of the list that contains the words after the | character
-        second_option = words[6]
+        second_option = words[3]
         chosen_string = random.choice([first_option, second_option])
         return chosen_string
     except Exception as e:
@@ -60,13 +52,13 @@ def random_choice(u, m):
         return "Not enough parameters: !random word | word"
 
 
-def jumble(u, m):
+def jumble(msg):
     word = str("GINGER")
     word = list(word)  # Convert the word to a list of characters
     random.shuffle(word)  # Shuffle the list of characters
     return ''.join(word)  # Join the list of characters back into a string and return it
 
-def ISS(u, m):
+def ISS(msg):
     location = ISS_Info.iss_current_loc()
     latitude = location['iss_position']['latitude']
     longitude = location['iss_position']['longitude']
@@ -76,11 +68,16 @@ def ISS(u, m):
     try:
         return "Flying over: " + (data["address"]["country"])
     except Exception as e:
-        return "Not over land, current lat,lon: " + str(latitude) + "," + str(longitude)
-        #return "Flying over the: " + get_ocean(latitude, longitude)
-        print(str(e))
+        url = f"https://geocode.xyz/{latitude},{longitude}?json=1"
+        response = requests.get(url)
+        data = response.json()
+        try:
+            return "Flying over: " + (data["suggestion"]["subregion"])
+        except Exception as e:
+            return "Ocean info not found. Pos: " + str(latitude) + "," + str(longitude)
+            print(str(e))
 
-def dogs(u, m):
+def dogs(msg):
     url = "https://dog.ceo/api/breeds/image/random"
     response = requests.get(url)
     data = response.json()
@@ -89,7 +86,7 @@ def dogs(u, m):
     except Exception as e:
         return str(e)
 
-def fox(u, m):
+def fox(msg):
     url = "https://randomfox.ca/floof/"
     response = requests.get(url)
     data = response.json()
@@ -98,7 +95,7 @@ def fox(u, m):
     except Exception as e:
         return str(e)
 
-def duck(u, m):
+def duck(msg):
     url = "https://random-d.uk/api/random"
     response = requests.get(url)
     data = response.json()
@@ -107,7 +104,7 @@ def duck(u, m):
     except Exception as e:
         return str(e)
 
-def bankhol(u, m):
+def bankhol(msg):
     response = requests.get('https://www.gov.uk/bank-holidays.json')
     data = response.json()
     now = datetime.datetime.now()
@@ -122,35 +119,20 @@ def bankhol(u, m):
     else:
         return 'There are no more bank holidays this year.'
 
-'''
-def get_ocean(latitude, longitude):
-  if -90 <= float(latitude) <= 90 and -180 <= float(longitude) <= 180:
-    if -90 <= float(latitude) <= -60:
-      return "Southern Ocean"
-    elif -60 < float(latitude) <= -30:
-      return "Atlantic Ocean"
-    elif -30 < float(latitude) <= 30:
-      if -180 <= float(longitude) <= -60:
-        return "Atlantic Ocean"
-      elif -60 < float(longitude) <= 60:
-        return "Indian Ocean"
-      elif 60 < float(longitude) <= 180:
-        return "Pacific Ocean"
-    elif 30 < float(latitude) <= 90:
-      return "Arctic Ocean"
-  return
-'''
-def roll_dice(u, m):
-    dice = [] # Initialize an empty list to store the dice rolls
+
+def roll_dice(msg):
+    u=msg["user"]
+    m=msg["message"]
+    dice=[] # Initialize an empty list to store the dice rolls
     for i in range(7):
-        roll = random.randint(1, 6)
-        if roll == 1:
-            dice.append("\x0313,15" + str(roll)) # Append the rolled value with IRC color codes for white background and pink text
+        roll=random.randint(1, 6)
+        if roll==1:
+            dice.append("\x0313,15" + str(roll))
         else:
-            dice.append("\x0301,15" + str(roll)) # Append the rolled value with IRC color codes for white background and black text
-        dice_str = " ".join(dice)
-        int_dice = [int(x[6:]) for x in dice] # Remove the IRC color codes and convert to integer
-        if i == 6:
-            sum_dice = sum(int_dice)
-            dice_str = "\x0301,15-".join(dice)
+            dice.append("\x0301,15" + str(roll)) 
+        dice_str=" ".join(dice)
+        int_dice=[int(x[6:]) for x in dice] 
+        if i==6:
+            sum_dice=sum(int_dice)
+            dice_str="\x0301,15-".join(dice)
             return dice_str + "\x03 " + u + "\x03 rolled: \x0307" + str(sum_dice)
