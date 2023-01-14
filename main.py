@@ -27,7 +27,7 @@ def parse_message(line):
           'user': res.group(1),
           'hostmask': res.group(2),
           'type': res.group(3),
-          'target': res.group(4),
+          'channel': res.group(4),
           'message': res.group(5)
         }
 
@@ -56,7 +56,7 @@ def bot_loop():
                     print((message["user"] + ": " + message["message"]).encode("utf-8"))
                     for pattern in config.COMMANDS:
                         if re.search(pattern[0], message["message"]):
-                            utility.chat(s, pattern[1](message), channel)
+                            utility.chat(s, pattern[1](message), message["channel"])
                             break
 if __name__ == "__main__":
     try:
