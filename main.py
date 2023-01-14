@@ -37,26 +37,27 @@ def parse_message(line):
 
 def bot_loop():
     while connected:
-        try:
-            response = s.recv(1024).decode("utf-8")
-        except Exception as e:
-            print("An error occurred while receiving a message:", str(e))
-            break
-        if response[0:4] == "PING":
-            print(response)
-            s.send(("PONG " + response.split()[1] + "\r\n").encode("utf-8"))
-            print("Pong")
-        else:
-            response = response.rstrip("\r\n")
-            print(response.encode("utf-8"))
-            message = parse_message(response)
-  #          print(message.encode("utf-8"))
-            if(message != False):
-                print((message["user"] + ": " + message["message"]).encode("utf-8"))
-                for pattern in config.COMMANDS:
-                    if re.search(pattern[0], message["message"]):
-                        utility.chat(s, pattern[1](message))
-                        break
+        for channel in config.CHANNELS:
+            s.send(("JOIN {}\r\n".format(channel)).encode("utf-8"))
+            try:
+                response = s.recv(1024).decode("utf-8")
+            except Exception as e:
+                print("An error occurred while receiving a message:", str(e))
+                break
+            if response[0:4] == "PING":
+                print(response)
+                s.send(("PONG " + response.split()[1] + "\r\n").encode("utf-8"))
+                print("Pong")
+            else:
+                response = response.rstrip("\r\n")
+                print(response.encode("utf-8"))
+                message = parse_message(response)
+                if(message != False):
+                    print((message["user"] + ": " + message["message"]).encode("utf-8"))
+                    for pattern in config.COMMANDS:
+                        if re.search(pattern[0], message["message"]):
+                            utility.chat(s, pattern[1](message), channel)
+                            break
 if __name__ == "__main__":
     try:
         bot_loop()
