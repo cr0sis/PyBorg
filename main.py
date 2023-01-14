@@ -13,7 +13,6 @@ try:
     s.send(("NICK {}\r\n".format(config.NICK)).encode("utf-8"))
     s.send(("PASS {}\r\n".format(config.PASS)).encode("utf-8"))
     s.send(("USER {}\r\n".format(config.USER)).encode("utf-8"))
-    s.send(("JOIN {}\r\n".format(config.CHAN)).encode("utf-8"))
     connected = True #Socket succefully connected
 
 except Exception as e:
