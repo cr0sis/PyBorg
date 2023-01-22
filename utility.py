@@ -3,6 +3,7 @@ import socket
 import time
 import random
 import datetime
+from decimal import Decimal, InvalidOperation
 from datetime import date
 from gpiozero import CPUTemperature
 from datetime import datetime
@@ -14,6 +15,7 @@ from bs4 import BeautifulSoup
 from astral import moon
 
 headers = {
+    'Accept-Language': 'en',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -28,6 +30,122 @@ def chat(sock, msg, channel):
         for m in msg:
             sock.send(("PRIVMSG {} :{}\r\n".format(channel, m)).encode("UTF-8"))
     time.sleep(1 / config.RATE)
+
+def fix_nick(name):
+    return name[0] + u"\U0000FEFF" + name[1:]
+
+client_id = "from_your_devTwitch_dashboard"
+client_secret = "from_your_devTwitch_dashboard"
+
+def get_oauth_token():
+    url = "https://id.twitch.tv/oauth2/token"
+    data = {
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "grant_type": "client_credentials"
+    }
+    response = requests.post(url, data=data)
+    if response.status_code != 200:
+        raise ValueError(f"Failed to get OAuth token: {response.text}")
+    return response.json()["access_token"]
+
+def twitch(msg):
+    m=msg["message"]
+    l=m.split()
+    if len(l) > 1:
+      username=l[1]
+      url = f"https://api.twitch.tv/helix/streams?user_login={username}"
+      headers = {
+    "Client-ID": client_id,
+    "Authorization": f"Bearer {get_oauth_token()}"
+}
+      response = requests.get(url, headers=headers)
+    else:
+        return "Hats allowed always. ~hats username tho"
+    if response.status_code != 200:
+        return f"Failed to check stream status: {response.text}"
+    data = response.json()
+    if len(data["data"]) > 0:
+          return f'{username} is online! https://www.twitch.tv/{username}'
+    else:
+          return f'{fix_nick(username)} is offline.' 
+ 
+
+def top_scores(msg):
+    data = read_json_file('dice_rolls.json')
+    best_scores = data['best_scores']
+    top_score_list = []
+    scores = []
+    for user in best_scores:
+        top_score_list.append((user, best_scores[user]))
+    top_score_list.sort(key=lambda x: x[1], reverse=False)
+    for name,score in top_score_list:
+        scores.append("{} : {}".format(fix_nick(name),score))
+    return scores
+
+def calculator(msg):
+    m = msg["message"]
+    l = m.split()
+    try:
+        num1 = Decimal(l[1])
+        operator = l[2]
+        num2 = Decimal(l[3])
+    except (InvalidOperation, IndexError):
+        return "Invalid input. Please enter a valid calculation in the format 'number operator number'"
+    if operator == "+":
+        result = num1 + num2
+    elif operator == "-":
+        result = num1 - num2
+    elif operator == "*":
+        result = num1 * num2
+    elif operator == "/":
+        try:
+            result = num1 / num2
+        except DivisionByZero:
+            return "Cannot divide by zero."
+    else:
+        return "Invalid operator. Please enter one of the following: +, -, *, /"
+    return str(result) 
+
+
+def rds(msg):
+   m=msg["message"]
+   l=m.split()
+   thing=l[1]
+   try:
+      answer = float(thing) * 180 / 3.1415
+      answerr=round(answer, 3) 
+      return f'{thing} radians = {answerr}°'
+   except Exception as ValueError:
+      print(str(ValueError))
+      return "Invalid input. Please enter a valid number."
+
+
+last_run_time = time.time()
+def elapsed_time(msg):
+    global last_run_time
+    current_time = time.time()
+    elapsed = current_time - last_run_time
+    last_run_time = current_time
+
+    days, remainder = divmod(elapsed, 86400)
+    hours, remainder = divmod(remainder, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    months, days = divmod(days, 30)
+    years, months = divmod(months, 12)
+
+    if years > 0:
+        return f"{int(years)}y {int(months)}m {int(days)}d {int(hours)}h {int(minutes)}m {int(seconds)}s"
+    elif months > 0:
+        return f"{int(months)}m {int(days)}d {int(hours)}h {int(minutes)}m {int(seconds)}s"
+    elif days > 0:
+        return f"{int(days)}d {int(hours)}h {int(minutes)}m {int(seconds)}s"
+    elif hours > 0:
+        return f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+    elif minutes > 0:
+        return f"{int(minutes)}m {int(seconds)}s"
+    else:
+        return f"{int(seconds)}s"
 
 def sun(msg):
     sun_list = ["🌞"]
@@ -63,6 +181,7 @@ def get_moon_emoji(msg):
     counter+=1
     phase_list=[]
     phase = moon.phase(datetime.now())
+    phasenr = phase
     phaser = round(phase, 2)
     phase = str(phaser)
     messages = [
@@ -91,21 +210,21 @@ def get_moon_emoji(msg):
         "When you are the moon, the best form you can be is a full moon. And then the half moon... he's all right. But the full moon is the famous moon. And then three-quarters, eh, no one gives a sh*t about him. When does he come, two days in, to the calendar month? He's useless. Full moon. The moon. The main moon.",
 ]
 
-    if phaser < 1.84566:
+    if phasenr < 1.84566:
         phase_list=[u'\U0001F311' + " {" + phase + "} Total eclipse"]
-    elif phaser < 5.53699:
+    elif phasenr < 5.53699:
         phase_list=[u'\U0001F312' + " {" + phase + "} Waxing crescent"]
-    elif phaser < 9.22831:
+    elif phasenr < 9.22831:
         phase_list=[u'\U0001F313' + " {" + phase + "} First quarter"]
-    elif phaser < 12.91963:
+    elif phasenr < 12.91963:
         phase_list=[u'\U0001F314' + " {" + phase + "} Waxing gibbous"]
-    elif phaser < 16.61096:
+    elif phasenr < 16.61096:
         phase_list=[u'\U0001F315' + " {" + phase + "} Fuuull mooooon"]
-    elif phaser < 20.30228:
+    elif phasenr < 20.30228:
         phase_list=[u'\U0001F316' + " {" + phase + "} Waning gibbous"]
-    elif phaser < 23.99361:
+    elif phasenr < 23.99361:
         phase_list=[u'\U0001F317' + " {" + phase + "} Last quarter"]
-    elif phaser < 27.68493:
+    elif phasenr < 27.68493:
         phase_list=[u'\U0001F318' + " {" + phase + "} Waning crescent"]
     else:
         phase_list=[u'\U0001F311' + " {" + phase + "} Total eclipse"]
@@ -160,7 +279,7 @@ def ISS(msg):
     latitude = location['iss_position']['latitude']
     longitude = location['iss_position']['longitude']
     url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={latitude}&lon={longitude}"
-    response = requests.get(url)
+    response = requests.get(url, headers=headers)
     data = response.json()
     try:
         return "Flying over: " + (data["address"]["country"])
@@ -207,10 +326,10 @@ def duck(msg):
 def bankhol(msg):
     response = requests.get('https://www.gov.uk/bank-holidays.json')
     data = response.json()
-    now = datetime.datetime.now()
+    now = datetime.now()
     next_holiday = None
     for holiday in data['england-and-wales']['events']:
-        holiday_date = datetime.datetime.strptime(holiday['date'], '%Y-%m-%d')
+        holiday_date = datetime.strptime(holiday['date'], '%Y-%m-%d')
         if holiday_date > now:
             next_holiday = holiday
             break
@@ -277,3 +396,49 @@ def roll_dice(msg):
             else:
                 dice_list.append("omg " + u + " broke the record!!")
                 return dice_list
+
+def roll_dice2(msg):
+    u=msg["user"]
+    m=msg["message"]
+    dice=[] # Initialize an empty list to store the dice rolls
+    render = ""
+    for i in range(7):
+        roll=random.randint(1, 6)
+        dice.append(roll)
+        if roll==1:
+            col = "\x0313,15"
+        else:
+            col = "\x0301,15"
+        if i == 0:
+            render += col + " " + str(roll)
+        elif i == 6:
+            render += "-" + col + str(roll) + " "
+        else:
+            render += "-" + col + str(roll)
+
+    newrecord=False
+    sum_dice=sum(dice)
+
+    # Read data from JSON file
+    data = read_json_file('dice_rolls.json')
+
+    # Increment total number of rolls
+    data['total_rolls'] += 1
+
+    # Update lowest score and user with lowest score
+    if sum_dice < data['lowest_score']:
+        data['lowest_score'] = sum_dice
+        data['lowest_score_user'] = u
+        newrecord=True
+    # Update best score for current user
+    if u not in data['best_scores'] or sum_dice < data['best_scores'][u]:
+        data['best_scores'][u] = sum_dice
+
+    # Write updated data to JSON file
+    write_json_file('dice_rolls.json', data)
+    render = [render + "\x03 " + u + "\x03 rolled: \x0307" + str(sum_dice)]
+    if not newrecord:
+        return render
+    else:
+        render.append("omg " + u + " broke the record!!")
+        return render
