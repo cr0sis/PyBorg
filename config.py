@@ -8,8 +8,13 @@ CHANNELS = ["#channel1", "#channel2"]
 RATE = (20/30)                                # messages per seccond
 COMMANDS = [
     [r'^\.bots$', utility.report_in],
+    [r'^~calc', utility.calculator],
+    [r'^~topscores$', utility.top_scores],
+    [r'^~hats', utility.twitch],
+    [r'^~rds', utility.rds],
+    [r'^~chk$', utility.elapsed_time],
     [r'^~gdq$', utility.gdq],
-    [r'^~roll7$', utility.roll_dice],
+    [r'^~roll7$', utility.roll_dice2],
     [r'^~time$', utility.check_time],
     [r'^~ginger$', utility.jumble],
     [r'^~date$', utility.check_date],
@@ -25,3 +30,4 @@ COMMANDS = [
     [r'^~lenny$', utility.lenny],
     [r'^~sun$', utility.sun],
 ]
+
