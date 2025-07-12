@@ -134,16 +134,16 @@ class IRCBot:
             return
 
         # ── temperature conversion ───────────────────────────────
-        temp_matches = re.findall(r'(?<!\S)(-?\d{1,3}(?:\.\d+)?)([cCfF])(?=\s|$|[!?;,.\)])', text)
+        temp_matches = re.findall(r'(?<!\S)(-?\d{1,3}(?:\.\d+)?)([cCfF])(?=\s|$)', text)
         if len(temp_matches) == 1:
             value_str, unit = temp_matches[0]
             value = float(value_str)
             if unit.lower() == 'c':
                 converted = value * 9 / 5 + 32
-                reply = f"{value:.1f}°C = {converted:.1f}°F"
+                reply = f"{value:.1f}°C = {converted:.1f}°F"
             else:
                 converted = (value - 32) * 5 / 9
-                reply = f"{value:.1f}°F = {converted:.1f}°C"
+                reply = f"{value:.1f}°F = {converted:.1f}°C"
             self.safe_chat(reply, message["channel"])
             return
 
