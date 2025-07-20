@@ -1,6 +1,6 @@
 # PyBorg 🤖
 
-A modern, plugin-based IRC bot written in Python with async architecture, AI integration, and a web interface.
+A modern, plugin-based IRC bot written in Python with async architecture, Uno Game, AI integration, and a web interface.
 
 ## Features ✨
 
