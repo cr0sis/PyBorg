@@ -1,6 +1,6 @@
 # PyBorg 🤖
 
-A modern, plugin-based IRC bot written in Python with async architecture, Uno Game, AI integration, and a web interface.
+A modern, plugin-based IRC bot written in Python with async architecture, AI integration, and a complete **UNO card game** as its flagship feature.
 
 ## Features ✨
 
@@ -13,7 +13,8 @@ A modern, plugin-based IRC bot written in Python with async architecture, Uno Ga
 - **Auto-Rejoin**: Automatically rejoins channels when kicked
 - **Rate Limiting**: Built-in flood protection
 - **Memo System**: Leave messages for users delivered when they speak
-- **Games**: UNO, dice games, breakout, and more
+- **UNO Card Game**: Complete multiplayer UNO with leaderboards and statistics
+- **Games**: Dice games, breakout, and more
 - **Rich Commands**: Weather, ISS tracking, server monitoring, and utilities
 
 ## Quick Start 🚀
@@ -56,6 +57,62 @@ The setup wizard will guide you through:
 # Or run directly
 python3 bot.py your_network_name
 ```
+
+## 🃏 UNO Card Game - The Main Attraction
+
+PyBorg's flagship feature is a **complete multiplayer UNO card game** that runs entirely in IRC channels. Challenge friends, climb leaderboards, and enjoy classic UNO action with IRC-style formatting and colors.
+
+### Game Features
+- **Multiplayer Support**: 2-10 players per game
+- **Complete UNO Rules**: Draw 2, Wild +4, Skip, Reverse, Color changes
+- **Smart AI**: Handles all game logic, card validation, and turn management
+- **Visual Cards**: IRC color-coded cards for easy recognition
+- **Statistics Tracking**: Wins, games played, cards per game averages
+- **Global Leaderboards**: Cross-network rankings and achievements
+- **Auto-Save**: Games persist through bot restarts
+
+### Quick UNO Guide
+```
+!uno                    # Start a new game
+!join                   # Join an existing game  
+!hand                   # View your cards (private message)
+!play <card>           # Play a card (e.g., !play r5, !play wild)
+!draw                   # Draw a card from deck
+!pass                   # Pass your turn (after drawing)
+!cards <player>        # Check how many cards a player has
+!unoleaderboard        # View top players and statistics
+!unohelp              # Full command reference
+!leave                 # Leave current game
+!endgame              # End game (admin/starter only)
+```
+
+### UNO Card Examples
+- **Number Cards**: `r5` (Red 5), `b2` (Blue 2), `g9` (Green 9), `y7` (Yellow 7)
+- **Action Cards**: `rskip` (Red Skip), `bdraw2` (Blue Draw 2), `greverse` (Green Reverse)
+- **Wild Cards**: `wild` (Wild), `wild4` (Wild Draw 4)
+
+### Sample Game Flow
+```
+<PyBorg> 🃏 UNO Game Started! Players: Alice, Bob, Carol
+<PyBorg> 📋 Turn Order: Alice → Bob → Carol
+<PyBorg> 🎯 Current Card: [🔴5] | Alice's turn (7 cards)
+<Alice> !play r3
+<PyBorg> ✅ Alice played [🔴3] | Bob's turn (7 cards)  
+<Bob> !play b3
+<PyBorg> ✅ Bob played [🔵3] | Carol's turn (6 cards)
+<Carol> !play wild red
+<PyBorg> 🌈 Carol played [WILD] → RED | Alice's turn (5 cards)
+```
+
+### Leaderboard & Statistics
+The UNO system tracks comprehensive statistics:
+- **Win/Loss Ratios**: Track your success rate
+- **Cards Per Game**: Average efficiency metrics  
+- **Total Games**: Lifetime game participation
+- **Recent Activity**: Last game timestamps
+- **Global Rankings**: See who's the ultimate UNO champion
+
+View stats anytime with `!unoleaderboard` to see the top players across all networks!
 
 ## Configuration ⚙️
 
