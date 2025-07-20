@@ -627,6 +627,9 @@
                 <button class="tab-button" onclick="showTab('leaderboard')">
                     <i class="fas fa-trophy"></i> UNO Leaderboard
                 </button>
+                <button class="tab-button" onclick="showTab('pigs-leaderboard')">
+                    <i class="fas fa-pig"></i> Pigs Leaderboard
+                </button>
                 <button class="tab-button" onclick="showTab('breakout')">
                     <i class="fas fa-gamepad"></i> Breakout Game
                 </button>
@@ -1038,6 +1041,108 @@
                                     <div class="detail-row">
                                         <span class="detail-label">Description:</span>
                                         <span class="detail-value">Choose randomly from options</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="command-category">
+                        <div class="category-header">
+                            <i class="fas fa-pig"></i>
+                            Pass the Pigs Game
+                        </div>
+                        <div class="command-list">
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!pigs', event)">!pigs</code>
+                                    <span class="command-description">Start/join/play Pass the Pigs</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!pigs</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Start a new game, join existing game, or roll the pigs</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Game Flow:</span>
+                                        <span class="detail-value">30-second join timer → Roll pigs for points → Bank points or risk Pig Outs</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Win Condition:</span>
+                                        <span class="detail-value">First player to bank 100+ points wins immediately</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!pigs bank', event)">!pigs bank</code>
+                                    <span class="command-description">Bank your turn score</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!pigs bank</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Bank your current turn score and pass turn to next player (win if you reach 100+ points)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!pigs standings', event)">!pigs standings</code>
+                                    <span class="command-description">View current game standings</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!pigs standings</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show current scores and whose turn it is</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!pigs leaderboard', event)">!pigs leaderboard</code>
+                                    <span class="command-description">View Pass the Pigs leaderboard</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!pigs leaderboard</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show top players with wins, best scores, and pig-out counts</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!pigs quit', event)">!pigs quit</code>
+                                    <span class="command-description">End current game</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!pigs quit</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">End the current game (current player or admin only)</span>
                                     </div>
                                 </div>
                             </div>
@@ -1674,6 +1779,120 @@
                 </div>
             </div>
 
+            <!-- Pass the Pigs Leaderboard Tab -->
+            <div id="pigs-leaderboard" class="tab-content">
+                <div class="network-header">
+                    <h2><i class="fas fa-pig"></i> Pass the Pigs Leaderboard</h2>
+                    <p class="network-description">Roll the pigs and dominate the leaderboard!</p>
+                </div>
+                <div style="padding: 1.5rem;">
+                    <!-- Network Selector -->
+                    <div class="network-selector">
+                        <button id="example-pigs-btn" class="network-btn active" onclick="showPigsLeaderboard('example')">
+                            <i class="fas fa-server"></i> Example Network
+                        </button>
+                    </div>
+                    
+                    <div class="leaderboard-stats">
+                        <div class="stat-box">
+                            <div class="stat-number" id="pigs-total-players">0</div>
+                            <div class="stat-label">Total Players</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="pigs-total-games">0</div>
+                            <div class="stat-label">Games Played</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="pigs-highest-score">0</div>
+                            <div class="stat-label">Highest Score</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="pigs-total-pig-outs">0</div>
+                            <div class="stat-label">Total Pig Outs</div>
+                        </div>
+                    </div>
+
+                    <div class="leaderboard-container">
+                        <div class="leaderboard-header">
+                            <h3><i class="fas fa-crown"></i> Top Players</h3>
+                            <div class="refresh-btn" onclick="refreshPigsLeaderboard()">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </div>
+                        </div>
+                        
+                        <div class="leaderboard-content">
+                            <div class="loading-state" id="pigs-loading">
+                                <div class="spinner"></div>
+                                <span>Loading leaderboard...</span>
+                            </div>
+                            
+                            <div class="error-state" id="pigs-error" style="display: none;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Failed to load leaderboard</span>
+                                <button onclick="refreshPigsLeaderboard()">Try Again</button>
+                            </div>
+                            
+                            <div class="leaderboard-table" id="pigs-leaderboard-table" style="display: none;">
+                                <div class="table-header">
+                                    <div class="rank-header">Rank</div>
+                                    <div class="player-header">Player</div>
+                                    <div class="wins-header">Wins</div>
+                                    <div class="games-header">Games</div>
+                                    <div class="score-header">Best Score</div>
+                                    <div class="pigouts-header">Pig Outs</div>
+                                </div>
+                                <div class="table-body" id="pigs-leaderboard-data">
+                                    <!-- Leaderboard data will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="game-info">
+                            <h4><i class="fas fa-info-circle"></i> Game Rules</h4>
+                            <div class="rules-grid">
+                                <div class="rule-item">
+                                    <i class="fas fa-dice"></i>
+                                    <div>
+                                        <strong>Razorback/Trotter:</strong> 5 points each
+                                    </div>
+                                </div>
+                                <div class="rule-item">
+                                    <i class="fas fa-star"></i>
+                                    <div>
+                                        <strong>Snouter:</strong> 10 points
+                                    </div>
+                                </div>
+                                <div class="rule-item">
+                                    <i class="fas fa-gem"></i>
+                                    <div>
+                                        <strong>Leaning Jowler:</strong> 15 points
+                                    </div>
+                                </div>
+                                <div class="rule-item">
+                                    <i class="fas fa-fire"></i>
+                                    <div>
+                                        <strong>Double Position:</strong> 4x points
+                                    </div>
+                                </div>
+                                <div class="rule-item">
+                                    <i class="fas fa-skull"></i>
+                                    <div>
+                                        <strong>Pig Out:</strong> Lose turn score
+                                    </div>
+                                </div>
+                                <div class="rule-item">
+                                    <i class="fas fa-bomb"></i>
+                                    <div>
+                                        <strong>Oinker:</strong> Lose ALL points
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+
             <!-- Breakout Game Tab -->
             <div id="breakout" class="tab-content">
                 <div class="network-header">
@@ -1902,6 +2121,107 @@
                 totalGamesElement.textContent = '0';
                 topPlayerElement.textContent = '-';
             }
+        }
+        
+        // Pass the Pigs Leaderboard Functions
+        let pigsLeaderboardData = null;
+        let currentPigsNetwork = 'example';
+        
+        function showPigsLeaderboard(network) {
+            currentPigsNetwork = network;
+            
+            // Update button styles
+            document.querySelectorAll('#example-pigs-btn').forEach(btn => {
+                btn.style.background = 'var(--bg-tertiary)';
+                btn.style.color = 'var(--text-secondary)';
+                btn.classList.remove('active');
+            });
+            document.getElementById(`${network.toLowerCase()}-pigs-btn`).style.background = 'var(--primary-color)';
+            document.getElementById(`${network.toLowerCase()}-pigs-btn`).style.color = 'white';
+            document.getElementById(`${network.toLowerCase()}-pigs-btn`).classList.add('active');
+            
+            loadPigsLeaderboard();
+        }
+        
+        function loadPigsLeaderboard() {
+            // Show loading state
+            document.getElementById('pigs-loading').style.display = 'flex';
+            document.getElementById('pigs-error').style.display = 'none';
+            document.getElementById('pigs-leaderboard-table').style.display = 'none';
+            
+            const networkPrefix = currentPigsNetwork.toLowerCase();
+            
+            fetch(`api/pigs_leaderboard.php?network=${networkPrefix}`)
+                .then(response => response.json())
+                .then(data => {
+                    pigsLeaderboardData = data;
+                    displayPigsLeaderboard(data);
+                })
+                .catch(error => {
+                    console.error('Error loading pigs leaderboard:', error);
+                    document.getElementById('pigs-loading').style.display = 'none';
+                    document.getElementById('pigs-error').style.display = 'flex';
+                });
+        }
+        
+        function displayPigsLeaderboard(data) {
+            document.getElementById('pigs-loading').style.display = 'none';
+            document.getElementById('pigs-error').style.display = 'none';
+            
+            const tableContainer = document.getElementById('pigs-leaderboard-table');
+            const dataContainer = document.getElementById('pigs-leaderboard-data');
+            
+            if (data.players && data.players.length > 0) {
+                // Update stats
+                document.getElementById('pigs-total-players').textContent = data.total_players || data.players.length;
+                document.getElementById('pigs-total-games').textContent = data.total_games || 0;
+                document.getElementById('pigs-highest-score').textContent = data.highest_score || 0;
+                document.getElementById('pigs-total-pig-outs').textContent = data.total_pig_outs || 0;
+                
+                // Clear and populate table
+                dataContainer.innerHTML = '';
+                
+                data.players.forEach((player, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'table-row';
+                    
+                    const rankEmoji = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
+                    const winRate = player.games_played > 0 ? ((player.wins / player.games_played) * 100).toFixed(1) : '0.0';
+                    
+                    row.innerHTML = `
+                        <div class="rank-cell">${rankEmoji}</div>
+                        <div class="player-cell">${player.user}</div>
+                        <div class="wins-cell">${player.wins}</div>
+                        <div class="games-cell">${player.games_played}</div>
+                        <div class="score-cell">${player.highest_game_score}</div>
+                        <div class="pigouts-cell">${player.pig_outs}</div>
+                    `;
+                    
+                    dataContainer.appendChild(row);
+                });
+                
+                tableContainer.style.display = 'block';
+            } else {
+                // No data available
+                document.getElementById('pigs-total-players').textContent = '0';
+                document.getElementById('pigs-total-games').textContent = '0';
+                document.getElementById('pigs-highest-score').textContent = '0';
+                document.getElementById('pigs-total-pig-outs').textContent = '0';
+                
+                dataContainer.innerHTML = `
+                    <div style="padding: 2rem; text-align: center; color: var(--text-secondary); grid-column: 1 / -1;">
+                        <i class="fas fa-pig" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                        <p>No ${currentPigsNetwork} Pass the Pigs games played yet!</p>
+                        <p style="font-size: 0.875rem; margin-top: 0.5rem;">Be the first to play and claim the leaderboard!</p>
+                    </div>
+                `;
+                
+                tableContainer.style.display = 'block';
+            }
+        }
+        
+        function refreshPigsLeaderboard() {
+            loadPigsLeaderboard();
         }
         
         function toggleCommand(element) {
