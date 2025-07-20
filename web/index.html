@@ -1,0 +1,3409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyBorg - IRC Bot Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f3f4f6;
+            --border-light: #e5e7eb;
+            --border-medium: #d1d5db;
+            --accent-blue: #eff6ff;
+            --accent-green: #f0fdf4;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --text-muted: #9ca3af;
+            --bg-primary: #1f2937;
+            --bg-secondary: #111827;
+            --bg-tertiary: #374151;
+            --border-light: #374151;
+            --border-medium: #4b5563;
+            --accent-blue: #1e3a8a;
+            --accent-green: #14532d;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-weight: 400;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 0.75rem;
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--border-medium);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .theme-toggle-icon {
+            font-size: 1rem;
+            color: var(--primary-color);
+            transition: transform 0.2s ease;
+        }
+
+        .theme-toggle:hover .theme-toggle-icon {
+            transform: rotate(15deg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 3rem 0 2rem;
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            letter-spacing: -0.025em;
+        }
+
+        .header .subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .network-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-button:hover {
+            background: var(--bg-primary);
+            border-color: var(--border-medium);
+            color: var(--text-primary);
+        }
+
+        .tab-button.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .commands-container {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .network-header {
+            background: var(--accent-blue);
+            border-bottom: 1px solid var(--border-light);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .network-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .network-header .network-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1px;
+            background: var(--border-light);
+        }
+
+        .command-category {
+            background: var(--bg-primary);
+        }
+
+        .category-header {
+            background: var(--bg-tertiary);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .category-header i {
+            color: var(--primary-color);
+            font-size: 1.125rem;
+        }
+
+        .command-list {
+            padding: 0;
+        }
+
+        .command-item {
+            border-bottom: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+
+        .command-item:last-child {
+            border-bottom: none;
+        }
+
+        .command-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .command-header {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .command-name {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            background: var(--accent-blue);
+            padding: 0.375rem 0.75rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+            white-space: nowrap;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .command-name:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .command-name::after {
+            content: '📋';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.2s ease;
+        }
+
+        .command-name:hover::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .command-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .command-toggle {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            transition: transform 0.2s ease;
+        }
+
+        .command-details {
+            display: none;
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-light);
+        }
+
+        .command-details.active {
+            display: block;
+        }
+
+        .command-item.expanded .command-toggle {
+            transform: rotate(180deg);
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 0.75rem;
+            gap: 1rem;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 4rem;
+            font-size: 0.875rem;
+        }
+
+        .detail-value {
+            color: var(--text-secondary);
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 0.875rem;
+            flex: 1;
+        }
+
+        .stats-bar {
+            background: var(--bg-tertiary);
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .stats-item {
+            text-align: center;
+        }
+
+        .stats-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .stats-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin: 0 1rem;
+            font-size: 1.125rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer a:hover {
+            color: var(--primary-dark);
+        }
+
+        /* Copy notification */
+        .copy-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .copy-notification.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Leaderboard Styles */
+        .leaderboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+        }
+
+        .stat-box {
+            text-align: center;
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-number {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .leaderboard-table {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+        }
+
+        .network-selector {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .network-btn {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .network-btn.active {
+            background: var(--primary-color) !important;
+            color: white !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        /* Game Styles */
+        .game-container {
+            background: var(--bg-primary);
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+        }
+
+        .ui {
+            color: var(--text-primary);
+        }
+
+        #gameCanvas {
+            border: 2px solid var(--border-medium);
+            border-radius: var(--radius-lg);
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        button:hover:not(:disabled) {
+            background: var(--primary-dark);
+        }
+
+        button:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 2rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .commands-grid {
+                grid-template-columns: 1fr;
+                gap: 1px;
+            }
+
+            .network-tabs {
+                gap: 0.25rem;
+            }
+
+            .tab-button {
+                padding: 0.625rem 1rem;
+                font-size: 0.8125rem;
+            }
+
+            .stats-bar {
+                gap: 1.5rem;
+            }
+
+            .command-header {
+                padding: 0.875rem 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .command-name {
+                align-self: flex-start;
+            }
+
+            .command-toggle {
+                align-self: flex-end;
+                margin-top: -1.5rem;
+            }
+
+            .theme-toggle {
+                top: 0.75rem;
+                right: 0.75rem;
+                padding: 0.625rem;
+                font-size: 0.8125rem;
+            }
+
+            .theme-toggle-icon {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dark Mode Toggle -->
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+        <i class="theme-toggle-icon fas fa-sun" id="theme-icon"></i>
+        <span id="theme-text">Light</span>
+    </button>
+    
+    <!-- Copy Notification -->
+    <div id="copy-notification" class="copy-notification">
+        <i class="fas fa-check"></i>
+        <span>Command copied to clipboard!</span>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-robot"></i> PyBorg</h1>
+            <p class="subtitle">IRC Bot Command Documentation</p>
+            <div class="network-tabs">
+                <button class="tab-button active" onclick="showTab('rizon')">
+                    <i class="fas fa-server"></i> Rizon Network
+                </button>
+                <button class="tab-button" onclick="showTab('libera')">
+                    <i class="fas fa-server"></i> Libera Network
+                </button>
+                <button class="tab-button" onclick="showTab('leaderboard')">
+                    <i class="fas fa-trophy"></i> UNO Leaderboard
+                </button>
+                <button class="tab-button" onclick="showTab('breakout')">
+                    <i class="fas fa-gamepad"></i> Breakout Game
+                </button>
+                <button class="tab-button" onclick="showTab('mars-colony')">
+                    <i class="fas fa-rocket"></i> Mars Colony
+                </button>
+                <button class="tab-button" onclick="window.open('admin_login.php', '_blank')" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-left: auto;">
+                    <i class="fas fa-cogs"></i> Admin Panel
+                </button>
+            </div>
+        </div>
+
+        <div class="commands-container">
+            <!-- Rizon Tab -->
+            <div id="rizon" class="tab-content active">
+                <div class="network-header">
+                    <h2><i class="fas fa-server"></i> Rizon Network</h2>
+                    <p class="network-description">Commands available on the Rizon IRC network (prefix: !)</p>
+                </div>
+                <div class="commands-grid">
+                    <div class="command-category">
+                        <div class="category-header">
+                            <i class="fas fa-gamepad"></i>
+                            Games & Gambling
+                        </div>
+                        <div class="command-list">
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!bet7', event)">!bet7</code>
+                                    <span class="command-description">Dice betting game</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!bet7</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Join or start a dice betting game</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!bet7.top', event)">!bet7.top</code>
+                                    <span class="command-description">Show betting leaderboard</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!bet7.top</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Display top betting scores</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!bet7.owned', event)">!bet7.owned</code>
+                                    <span class="command-description">Show your betting score</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!bet7.owned</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show your current betting balance</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!roll7', event)">!roll7</code>
+                                    <span class="command-description">Roll 7 dice</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!roll7</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Roll 7 dice and show total</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="command-category">
+                        <div class="category-header">
+                            <i class="fas fa-cards-blank"></i>
+                            UNO Game
+                        </div>
+                        <div class="command-list">
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!uno', event)">!uno</code>
+                                    <span class="command-description">Start UNO game</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!uno</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Start a new UNO game (auto-cancels in 30s if no one joins)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!join', event)">!join</code>
+                                    <span class="command-description">Join UNO game</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!join</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Join a waiting UNO game</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!start', event)">!start</code>
+                                    <span class="command-description">Start UNO round</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!start</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Begin the UNO game (starter only)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!play R5', event)">!play</code>
+                                    <span class="command-description">Play UNO card</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!play R5, !play WD4 red, !play BS</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Play a card in UNO (R=Red, B=Blue, G=Green, Y=Yellow)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!draw', event)">!draw</code>
+                                    <span class="command-description">Draw UNO card</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!draw</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Draw a card from the deck</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!cards', event)">!cards</code>
+                                    <span class="command-description">View your cards</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!cards</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">See your cards (sent via private notice)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!status', event)">!status</code>
+                                    <span class="command-description">Game status</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!status</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show current game status and turn</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!quit', event)">!quit</code>
+                                    <span class="command-description">Quit UNO game</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!quit</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Leave the current UNO game</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!unohelp', event)">!unohelp</code>
+                                    <span class="command-description">UNO help</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!unohelp</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show UNO game help and rules</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!unoleaderboard', event)">!unoleaderboard</code>
+                                    <span class="command-description">UNO leaderboard</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!unoleaderboard</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show UNO game leaderboard</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="command-category">
+                        <div class="category-header">
+                            <i class="fas fa-clock"></i>
+                            Reminders & Utilities
+                        </div>
+                        <div class="command-list">
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!remind(5 minutes) check pizza', event)">!remind</code>
+                                    <span class="command-description">Set reminder</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!remind(5 minutes) check pizza</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Examples:</span>
+                                        <span class="detail-value">!remind(1h30m) meeting, !remind(tomorrow at 2pm) call dentist</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Set a reminder with flexible time format</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!reminders', event)">!reminders</code>
+                                    <span class="command-description">List reminders</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!reminders</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">List your active reminders</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!cancelreminder 1', event)">!cancelreminder</code>
+                                    <span class="command-description">Cancel reminder</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!cancelreminder 1</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Cancel a reminder by number</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="command-category">
+                        <div class="category-header">
+                            <i class="fas fa-info-circle"></i>
+                            Information & Fun
+                        </div>
+                        <div class="command-list">
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!piss', event)">!piss</code>
+                                    <span class="command-description">ISS urine tank level</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!piss</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show ISS urine tank level</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!weather', event)">!weather</code>
+                                    <span class="command-description">Weather information</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!weather</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Get random weather description</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!lenny', event)">!lenny</code>
+                                    <span class="command-description">Lenny face</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!lenny</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show Lenny face ( ͡° ͜ʖ ͡°)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!random red blue green', event)">!random</code>
+                                    <span class="command-description">Random choice</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!random red blue green</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Choose randomly from options</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="command-category">
+                        <div class="category-header">
+                            <i class="fas fa-calculator"></i>
+                            Tools & Calculators
+                        </div>
+                        <div class="command-list">
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!calc 2 + 2', event)">!calc</code>
+                                    <span class="command-description">Calculator</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!calc 2 + 2</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Perform basic calculations</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!time', event)">!time</code>
+                                    <span class="command-description">Current time</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!time</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show current time</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!date 30', event)">!date</code>
+                                    <span class="command-description">Date calculator</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!date 30</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Calculate date N days from now</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('!temp', event)">!temp</code>
+                                    <span class="command-description">Temperature sensor</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">!temp</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show sensor temperatures</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-bar">
+                    <div class="stats-item">
+                        <div class="stats-number">50+</div>
+                        <div class="stats-label">Commands</div>
+                    </div>
+                    <div class="stats-item">
+                        <div class="stats-number">3</div>
+                        <div class="stats-label">Channels</div>
+                    </div>
+                    <div class="stats-item">
+                        <div class="stats-number">24/7</div>
+                        <div class="stats-label">Online</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Libera Tab -->
+            <div id="libera" class="tab-content">
+                <div class="network-header">
+                    <h2><i class="fas fa-server"></i> Libera Network</h2>
+                    <p class="network-description">Commands available on the Libera IRC network (prefix: ~)</p>
+                </div>
+                <div class="commands-grid">
+                    <div class="command-category">
+                        <div class="category-header">
+                            <i class="fas fa-robot"></i>
+                            AI & Chat
+                        </div>
+                        <div class="command-list">
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~speak hello world', event)">~speak</code>
+                                    <span class="command-description">Chat with AI</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~speak hello world</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Context:</span>
+                                        <span class="detail-value">~speak (responds to recent chat)</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Chat with Gemini AI bot</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~speakclear', event)">~speakclear</code>
+                                    <span class="command-description">Clear chat history</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~speakclear</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Clear your AI conversation history</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="command-category">
+                        <div class="category-header">
+                            <i class="fas fa-cards-blank"></i>
+                            UNO Game
+                        </div>
+                        <div class="command-list">
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~uno', event)">~uno</code>
+                                    <span class="command-description">Start UNO game</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~uno</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Start a new UNO game (auto-cancels in 30s if no one joins)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~join', event)">~join</code>
+                                    <span class="command-description">Join UNO game</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~join</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Join a waiting UNO game</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~start', event)">~start</code>
+                                    <span class="command-description">Start UNO round</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~start</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Begin the UNO game (starter only)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~play R5', event)">~play</code>
+                                    <span class="command-description">Play UNO card</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~play R5, ~play WD4 red, ~play BS</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Play a card in UNO (R=Red, B=Blue, G=Green, Y=Yellow)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~draw', event)">~draw</code>
+                                    <span class="command-description">Draw UNO card</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~draw</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Draw a card from the deck</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~pass', event)">~pass</code>
+                                    <span class="command-description">Pass turn</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~pass</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Pass your turn (after drawing)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~cards', event)">~cards</code>
+                                    <span class="command-description">View your cards</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~cards</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">See your cards (sent via private notice)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~status', event)">~status</code>
+                                    <span class="command-description">Game status</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~status</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show current game status and turn</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~quit', event)">~quit</code>
+                                    <span class="command-description">Quit UNO game</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~quit</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Leave the current UNO game</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~unohelp', event)">~unohelp</code>
+                                    <span class="command-description">UNO help</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~unohelp</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show UNO game help and rules</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~unoleaderboard', event)">~unoleaderboard</code>
+                                    <span class="command-description">UNO leaderboard</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~unoleaderboard</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show UNO game leaderboard</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="command-category">
+                        <div class="category-header">
+                            <i class="fas fa-clock"></i>
+                            Reminders & Utilities
+                        </div>
+                        <div class="command-list">
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~remind(5 minutes) check pizza', event)">~remind</code>
+                                    <span class="command-description">Set reminder</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~remind(5 minutes) check pizza</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Examples:</span>
+                                        <span class="detail-value">~remind(1h30m) meeting, ~remind(tomorrow at 2pm) call dentist</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Set a reminder with flexible time format</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~reminders', event)">~reminders</code>
+                                    <span class="command-description">List reminders</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~reminders</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">List your active reminders</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~cancelreminder 1', event)">~cancelreminder</code>
+                                    <span class="command-description">Cancel reminder</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~cancelreminder 1</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Cancel a reminder by number</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="command-category">
+                        <div class="category-header">
+                            <i class="fas fa-info-circle"></i>
+                            Information & Fun
+                        </div>
+                        <div class="command-list">
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~piss', event)">~piss</code>
+                                    <span class="command-description">ISS urine tank level</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~piss</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show ISS urine tank level</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~hats username', event)">~hats</code>
+                                    <span class="command-description">Twitch stream status</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~hats username</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Check if Twitch user is streaming</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~dog', event)">~dog</code>
+                                    <span class="command-description">Random dog image</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~dog</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Get a random dog image</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~cat', event)">~cat</code>
+                                    <span class="command-description">Random cat image</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~cat</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Get a random cat image</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~lenny', event)">~lenny</code>
+                                    <span class="command-description">Lenny face</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~lenny</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show Lenny face ( ͡° ͜ʖ ͡°)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="command-category">
+                        <div class="category-header">
+                            <i class="fas fa-calculator"></i>
+                            Tools & Calculators
+                        </div>
+                        <div class="command-list">
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~calc 2 + 2', event)">~calc</code>
+                                    <span class="command-description">Calculator</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~calc 2 + 2</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Perform basic calculations</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~time', event)">~time</code>
+                                    <span class="command-description">Current time</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~time</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Show current time</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-item" onclick="toggleCommand(this)">
+                                <div class="command-header">
+                                    <code class="command-name" onclick="copyCommand('~date 30', event)">~date</code>
+                                    <span class="command-description">Date calculator</span>
+                                    <i class="fas fa-chevron-down command-toggle"></i>
+                                </div>
+                                <div class="command-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Usage:</span>
+                                        <span class="detail-value">~date 30</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Description:</span>
+                                        <span class="detail-value">Calculate date N days from now</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-bar">
+                    <div class="stats-item">
+                        <div class="stats-number">45+</div>
+                        <div class="stats-label">Commands</div>
+                    </div>
+                    <div class="stats-item">
+                        <div class="stats-number">24/7</div>
+                        <div class="stats-label">Online</div>
+                    </div>
+                    <div class="stats-item">
+                        <div class="stats-number">2</div>
+                        <div class="stats-label">Channels</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UNO Leaderboard Tab -->
+            <div id="leaderboard" class="tab-content">
+                <div class="network-header">
+                    <h2><i class="fas fa-trophy"></i> UNO Leaderboard</h2>
+                    <p class="network-description">Track your UNO game performance across networks</p>
+                </div>
+                <div style="padding: 1.5rem;">
+                    <!-- Network Selector -->
+                    <div class="network-selector">
+                        <button id="rizon-leaderboard-btn" class="network-btn active" onclick="showNetworkLeaderboard('Rizon')">
+                            <i class="fas fa-server"></i> Rizon
+                        </button>
+                        <button id="libera-leaderboard-btn" class="network-btn" onclick="showNetworkLeaderboard('Libera')" style="background: var(--bg-tertiary); color: var(--text-secondary);">
+                            <i class="fas fa-server"></i> Libera
+                        </button>
+                    </div>
+                    
+                    <div class="leaderboard-stats">
+                        <div class="stat-box">
+                            <div class="stat-number" id="total-players">0</div>
+                            <div class="stat-label">Total Players</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="total-games">0</div>
+                            <div class="stat-label">Games Played</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="top-player">-</div>
+                            <div class="stat-label">Top Player</div>
+                        </div>
+                    </div>
+                    
+                    <div class="leaderboard-table">
+                        <div style="background: var(--bg-tertiary); padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-light); font-weight: 600; display: grid; grid-template-columns: 60px 1fr 120px 100px 80px 80px 120px; gap: 0.75rem; align-items: center; font-size: 0.875rem;">
+                            <div>Rank</div>
+                            <div>Player</div>
+                            <div>Total Score</div>
+                            <div>Games</div>
+                            <div>Wins</div>
+                            <div>Win Rate</div>
+                            <div>Avg Score</div>
+                        </div>
+                        <div id="leaderboard-entries" style="min-height: 200px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 1rem;">
+                            Loading leaderboard...
+                        </div>
+                    </div>
+                    
+                    <div class="last-updated" style="text-align: center; color: var(--text-secondary); font-size: 0.875rem; margin-top: 1.5rem;" id="last-updated">
+                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- Breakout Game Tab -->
+            <div id="breakout" class="tab-content">
+                <div class="network-header">
+                    <h2><i class="fas fa-gamepad"></i> Breakout by cr0sis</h2>
+                    <p class="network-description">Classic breakout reimagined with power-ups, multiple levels, particle effects, and more!</p>
+                    <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">
+                        🎮 Multiple control options • 🔥 Power-ups • 📈 Progressive levels • ✨ Particle effects • 🏆 High scores
+                    </div>
+                </div>
+                <div style="padding: 1.5rem; text-align: center;">
+                    <div class="game-container">
+                        <div class="ui" style="margin-bottom: 1.5rem; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; text-align: center;">
+                            <div class="score" style="font-size: 1.2rem; font-weight: 700; color: var(--primary-color);">Score: <span id="score">0</span></div>
+                            <div style="color: var(--text-secondary); font-weight: 500;">Lives: <span id="lives">3</span></div>
+                            <div style="color: var(--text-secondary); font-weight: 500;">Level: <span id="level">1</span></div>
+                            <div style="color: #059669; font-weight: 500;">Personal: <span id="personalBest">0</span></div>
+                        </div>
+                        
+                        <div style="text-align: center; margin-bottom: 1rem; padding: 0.75rem; background: var(--accent-blue); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+                            <div style="color: #b45309; font-weight: 600; font-size: 0.9rem;">🏆 ALL-TIME CHAMPION 🏆</div>
+                            <div style="color: var(--text-primary); font-weight: 700; font-size: 1.1rem; margin-top: 0.25rem;">
+                                <span id="allTimeScore">0</span> by <span id="allTimePlayer">Nobody</span>
+                            </div>
+                        </div>
+                        
+                        <canvas id="gameCanvas" width="800" height="600" style="background-color: #000;"></canvas>
+                        
+                        <div class="ui" style="margin-top: 1.5rem;">
+                            <button id="pauseBtn" onclick="togglePause()" disabled style="margin: 0 0.5rem;">Pause</button>
+                            <button id="resetBtn" onclick="resetGame()" style="margin: 0 0.5rem;">Reset</button>
+                            <button onclick="showHighScoreTable()" style="margin: 0 0.5rem;">🏆 Hall of Fame</button>
+                        </div>
+                        
+                        <div class="controls" style="margin-top: 1.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                            <p>🎮 <strong>Controls:</strong> Arrow Keys, WASD, Mouse, or Touch to move paddle</p>
+                            <p>⚡ <strong>Actions:</strong> SPACE to launch ball / fire laser • S to toggle sound</p>
+                            <p>🔥 <strong>Power-ups:</strong> Catch falling power-ups for special abilities!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mars Colony Game Tab -->
+            <div id="mars-colony" class="tab-content">
+                <div class="network-header">
+                    <h2><i class="fas fa-rocket"></i> Mars Colony Game</h2>
+                    <p class="network-description">Escape the dying Earth and establish humanity's first Mars colony!</p>
+                </div>
+                <div style="padding: 1.5rem; text-align: center;">
+                    <iframe src="mars-colony.html" width="100%" height="800" style="border: 2px solid var(--border-medium); border-radius: var(--radius-lg); background: #000;"></iframe>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);">
+                        <a href="mars-colony.html" target="_blank" style="color: var(--primary-color);">🚀 Open in full screen</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2021 cr0sis | IRC Bot Documentation</p>
+            <div>
+                <a href="https://github.com/cr0sis" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Copy to clipboard functionality
+        function copyCommand(command, event) {
+            event.stopPropagation(); // Prevent command details from toggling
+            
+            navigator.clipboard.writeText(command).then(function() {
+                showCopyNotification();
+            }).catch(function(err) {
+                console.error('Failed to copy text: ', err);
+                // Fallback for older browsers
+                const textArea = document.createElement("textarea");
+                textArea.value = command;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showCopyNotification();
+                } catch (err) {
+                    console.error('Fallback: Oops, unable to copy', err);
+                }
+                document.body.removeChild(textArea);
+            });
+        }
+
+        function showCopyNotification() {
+            const notification = document.getElementById('copy-notification');
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        function showTab(tabName, saveToStorage = true) {
+            // Hide all tab contents
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to the corresponding button
+            const targetButton = document.querySelector(`[onclick="showTab('${tabName}')"]`);
+            if (targetButton) {
+                targetButton.classList.add('active');
+            }
+            
+            // Save current tab to localStorage for persistence
+            if (saveToStorage) {
+                localStorage.setItem('mainSiteActiveTab', tabName);
+            }
+            
+            // Load leaderboard data if leaderboard tab is selected
+            if (tabName === 'leaderboard') {
+                loadLeaderboard();
+            }
+        }
+        
+        let currentNetwork = 'Rizon';
+        let leaderboardData = null;
+        
+        function loadLeaderboard() {
+            fetch('api/uno_leaderboard.php')
+                .then(response => response.json())
+                .then(data => {
+                    leaderboardData = data;
+                    showNetworkLeaderboard(currentNetwork);
+                })
+                .catch(error => {
+                    console.error('Error loading leaderboard:', error);
+                    document.getElementById('leaderboard-entries').innerHTML = 
+                        '<div style="padding: 2.5rem; text-align: center; color: #dc2626;">Error loading leaderboard data</div>';
+                });
+        }
+        
+        function showNetworkLeaderboard(network) {
+            currentNetwork = network;
+            
+            // Update button styles
+            document.querySelectorAll('.network-btn').forEach(btn => {
+                btn.style.background = 'var(--bg-tertiary)';
+                btn.style.color = 'var(--text-secondary)';
+                btn.classList.remove('active');
+            });
+            document.getElementById(`${network.toLowerCase()}-leaderboard-btn`).style.background = 'var(--primary-color)';
+            document.getElementById(`${network.toLowerCase()}-leaderboard-btn`).style.color = 'white';
+            document.getElementById(`${network.toLowerCase()}-leaderboard-btn`).classList.add('active');
+            
+            if (!leaderboardData) {
+                loadLeaderboard();
+                return;
+            }
+            
+            const entriesContainer = document.getElementById('leaderboard-entries');
+            const totalPlayersElement = document.getElementById('total-players');
+            const totalGamesElement = document.getElementById('total-games');
+            const topPlayerElement = document.getElementById('top-player');
+            const lastUpdatedElement = document.getElementById('last-updated');
+            
+            const networkInfo = leaderboardData.networks && leaderboardData.networks[network];
+            const networkData = networkInfo && networkInfo.players ? networkInfo.players : (networkInfo && Array.isArray(networkInfo) ? networkInfo : []);
+            
+            if (networkData && networkData.length > 0) {
+                // Update stats
+                const totalGames = networkInfo && networkInfo.total_games !== undefined ? networkInfo.total_games : (networkData.length > 0 ? networkData[0].games_played : 0);
+                const totalPlayers = networkData.length;
+                const topPlayer = networkData[0];
+                
+                totalPlayersElement.textContent = totalPlayers;
+                totalGamesElement.textContent = totalGames;
+                topPlayerElement.textContent = topPlayer.player;
+                
+                // Display leaderboard
+                entriesContainer.innerHTML = '';
+                entriesContainer.style.display = 'block';
+                entriesContainer.style.alignItems = 'stretch';
+                entriesContainer.style.justifyContent = 'stretch';
+                
+                networkData.forEach((player, index) => {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display: grid; grid-template-columns: 60px 1fr 120px 100px 80px 80px 120px; gap: 0.75rem; align-items: center; padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--border-light); transition: background-color 0.2s ease; font-size: 0.875rem;';
+                    
+                    const rankClass = index < 3 ? `rank-${index + 1}` : '';
+                    const rankEmoji = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
+                    const winRate = player.games_played > 0 ? ((player.wins / player.games_played) * 100).toFixed(1) : '0.0';
+                    
+                    row.innerHTML = `
+                        <div style="font-size: 1rem; ${index < 3 ? 'font-weight: 700;' : 'font-weight: 500;'}">${rankEmoji}</div>
+                        <div style="font-weight: 600; color: var(--text-primary);">${player.player}</div>
+                        <div style="font-family: var(--font-mono); color: var(--primary-color); font-weight: 600;">${player.total_score}</div>
+                        <div style="font-family: var(--font-mono); color: var(--text-secondary);">${player.games_played}</div>
+                        <div style="font-family: var(--font-mono); color: #059669; font-weight: 600;">${player.wins}</div>
+                        <div style="font-family: var(--font-mono); color: var(--text-secondary);">${winRate}%</div>
+                        <div style="font-family: var(--font-mono); color: #dc2626; font-weight: 600;">${player.avg_score}</div>
+                    `;
+                    
+                    // Add hover effect
+                    row.addEventListener('mouseenter', () => {
+                        row.style.backgroundColor = 'var(--bg-secondary)';
+                    });
+                    row.addEventListener('mouseleave', () => {
+                        row.style.backgroundColor = '';
+                    });
+                    
+                    entriesContainer.appendChild(row);
+                });
+                
+                // Update last updated time
+                if (leaderboardData.last_updated) {
+                    const date = new Date(leaderboardData.last_updated);
+                    lastUpdatedElement.textContent = `Last updated: ${date.toLocaleString()}`;
+                }
+            } else {
+                entriesContainer.innerHTML = `<div style="padding: 2.5rem; text-align: center; color: var(--text-secondary);">No ${network} games played yet!</div>`;
+                totalPlayersElement.textContent = '0';
+                totalGamesElement.textContent = '0';
+                topPlayerElement.textContent = '-';
+            }
+        }
+        
+        function toggleCommand(element) {
+            const details = element.querySelector('.command-details');
+            const isExpanded = element.classList.contains('expanded');
+            
+            if (isExpanded) {
+                element.classList.remove('expanded');
+                details.classList.remove('active');
+            } else {
+                element.classList.add('expanded');
+                details.classList.add('active');
+            }
+        }
+        
+        // Close command details when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.command-item')) {
+                document.querySelectorAll('.command-item.expanded').forEach(item => {
+                    item.classList.remove('expanded');
+                    item.querySelector('.command-details').classList.remove('active');
+                });
+            }
+        });
+
+        // Breakout by cr0sis - Game Logic
+        let canvas, ctx, scoreElement, livesElement, pauseBtn, resetBtn, levelElement, personalBestElement, allTimeScoreElement, allTimePlayerElement;
+        let gameRunning = false;
+        let gamePaused = false;
+        let gameStarted = false;
+        let score = 0;
+        let lives = 3;
+        let level = 1;
+        let animationId;
+        let soundEnabled = true;
+        let playerName = '';
+        let scoreSubmitted = false;
+
+        // Game state
+        const gameState = {
+            balls: [],
+            powerUps: [],
+            particles: [],
+            screenShake: 0,
+            multiplier: 1,
+            combo: 0
+        };
+
+        // Paddle with enhanced properties
+        const paddle = {
+            x: 0,
+            y: 0,
+            width: 150,
+            height: 15,
+            speed: 8,
+            originalWidth: 150,
+            laser: false,
+            sticky: false,
+            powerUpTimer: 0
+        };
+
+        // Ball template
+        const ballTemplate = {
+            x: 0,
+            y: 0,
+            radius: 10,
+            dx: 0,
+            dy: 0,
+            speed: 5,
+            launched: false,
+            trail: []
+        };
+
+        // Power-up types
+        const powerUpTypes = [
+            { type: 'multiball', color: '#FF6B6B', symbol: '●●●', chance: 0.15 },
+            { type: 'bigpaddle', color: '#4ECDC4', symbol: '━━━', chance: 0.20 },
+            { type: 'laser', color: '#45B7D1', symbol: '⚡', chance: 0.15 },
+            { type: 'sticky', color: '#96CEB4', symbol: '〇', chance: 0.15 },
+            { type: 'extralife', color: '#FFEAA7', symbol: '♥', chance: 0.10 },
+            { type: 'slowball', color: '#DDA0DD', symbol: '🐌', chance: 0.15 },
+            { type: 'megaball', color: '#98D8C8', symbol: '⚫', chance: 0.10 }
+        ];
+
+        // Block system
+        const blocks = [];
+        const blockRows = 8;
+        const blockCols = 10;
+        const blockWidth = 75;
+        const blockHeight = 20;
+        const blockPadding = 5;
+        const blockColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F'];
+
+        // Input handling
+        const keys = {};
+        let mouseX = 0;
+        let touchX = 0;
+        
+        // High Score System
+        let allTimeHighScore = { score: 0, player: 'Nobody' };
+        let sessionPersonalBest = 0;
+        
+        function getLocalHighScore() {
+            return parseInt(localStorage.getItem('breakout-highscore')) || 0;
+        }
+
+        function setLocalHighScore(newScore) {
+            const currentHigh = getLocalHighScore();
+            if (newScore > currentHigh) {
+                localStorage.setItem('breakout-highscore', newScore.toString());
+                return true;
+            }
+            return false;
+        }
+
+        function updatePersonalBest(newScore) {
+            if (newScore > sessionPersonalBest) {
+                sessionPersonalBest = newScore;
+                return true;
+            }
+            return false;
+        }
+
+        // Fetch all-time high score from database
+        async function fetchAllTimeHighScore() {
+            try {
+                const response = await fetch('/breakout_scores.php?limit=1');
+                if (response.ok) {
+                    const scores = await response.json();
+                    if (scores.length > 0) {
+                        allTimeHighScore = {
+                            score: scores[0].score,
+                            player: scores[0].player_name
+                        };
+                        // Update all-time champion display
+                        if (allTimeScoreElement) allTimeScoreElement.textContent = allTimeHighScore.score.toLocaleString();
+                        if (allTimePlayerElement) allTimePlayerElement.textContent = allTimeHighScore.player;
+                        
+                        // Update UI to show the personal best
+                        updateUI();
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch all-time high score:', error);
+            }
+        }
+
+        function getCurrentHighScore() {
+            return Math.max(allTimeHighScore.score, getLocalHighScore());
+        }
+
+        // Client-side profanity filter (lightweight version)
+        function containsProfanityJS(text) {
+            // Core profanity list for client-side checking
+            const profanityList = [
+                'fuck', 'shit', 'bitch', 'damn', 'hell', 'ass', 'crap', 'piss', 'cock', 'dick', 'pussy', 'cunt', 'whore', 'slut',
+                'bastard', 'asshole', 'bullshit', 'goddamn', 'wtf', 'stfu', 'gtfo', 'nigger', 'nigga', 'faggot', 'retard',
+                'nazi', 'hitler', 'porn', 'sex', 'cum', 'kill', 'murder', 'rape', 'bomb', 'suicide', 'kys', 'admin', 'mod'
+            ];
+            
+            const normalized = normalizeProfanityTextJS(text);
+            
+            for (const word of profanityList) {
+                const normalizedWord = normalizeProfanityTextJS(word);
+                if (normalized.includes(normalizedWord)) {
+                    return true;
+                }
+                
+                // Check for variations with separators
+                const pattern = normalizedWord.split('').join('[0-9\\s\\-_\\.\\*\\+]*?');
+                const regex = new RegExp(pattern, 'i');
+                if (regex.test(normalized)) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        function normalizeProfanityTextJS(text) {
+            text = text.toLowerCase().trim();
+            
+            // Remove separators
+            text = text.replace(/[\s\-_\.\*\+!@#$%^&]/g, '');
+            
+            // Replace leetspeak
+            const leetspeak = {
+                '4': 'a', '@': 'a', '3': 'e', '1': 'i', '!': 'i', '|': 'i',
+                '0': 'o', '5': 's', '$': 's', '7': 't', '+': 't', '8': 'b'
+            };
+            
+            for (const [leet, normal] of Object.entries(leetspeak)) {
+                text = text.replace(new RegExp(leet.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), normal);
+            }
+            
+            // Remove remaining numbers
+            text = text.replace(/[0-9]+/g, '');
+            
+            return text;
+        }
+
+        // Check for admin localStorage reset
+        async function checkLocalStorageReset() {
+            try {
+                const response = await fetch('/admin_api.php?action=check_reset_flag');
+                const result = await response.json();
+                if (result.should_reset) {
+                    localStorage.removeItem('breakout-highscore');
+                    // Optionally show a message to the user
+                    console.log('Local scores have been reset by administrator');
+                }
+            } catch (error) {
+                // Silently fail if admin API is not accessible
+                console.log('Could not check for localStorage reset');
+            }
+        }
+
+        // Sound System (Web Audio API simulation)
+        function playSound(type) {
+            if (!soundEnabled) return;
+            
+            // Simple sound effects using oscillator
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            const sounds = {
+                paddle: { freq: 200, duration: 0.1 },
+                block: { freq: 400, duration: 0.15 },
+                powerup: { freq: 600, duration: 0.2 },
+                life: { freq: 150, duration: 0.3 },
+                win: { freq: 800, duration: 0.5 }
+            };
+            
+            const sound = sounds[type] || sounds.block;
+            oscillator.frequency.setValueAtTime(sound.freq, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + sound.duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + sound.duration);
+        }
+
+        function initBreakoutGame() {
+            canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            
+            ctx = canvas.getContext('2d');
+            scoreElement = document.getElementById('score');
+            livesElement = document.getElementById('lives');
+            levelElement = document.getElementById('level');
+            personalBestElement = document.getElementById('personalBest');
+            allTimeScoreElement = document.getElementById('allTimeScore');
+            allTimePlayerElement = document.getElementById('allTimePlayer');
+            pauseBtn = document.getElementById('pauseBtn');
+            resetBtn = document.getElementById('resetBtn');
+
+            // Check for admin localStorage reset
+            checkLocalStorageReset();
+
+            // Fetch all-time high score from database
+            fetchAllTimeHighScore();
+
+            // Setup mouse and touch controls
+            setupControls();
+
+            // Set initial paddle position
+            paddle.x = canvas.width / 2 - paddle.width / 2;
+            paddle.y = canvas.height - 30;
+
+            // Initialize first ball
+            const firstBall = { ...ballTemplate };
+            firstBall.x = canvas.width / 2;
+            firstBall.y = paddle.y - 20;
+            gameState.balls = [firstBall];
+
+            initBlocks();
+            updateUI();
+            draw();
+            
+            // Game is ready but not started yet
+            gameStarted = false;
+            gameRunning = false;
+            if (pauseBtn) pauseBtn.disabled = true;
+        }
+
+        function setupControls() {
+            // Mouse controls - listen to document for global mouse tracking
+            document.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                // Update mouseX even when cursor is outside canvas
+                mouseX = e.clientX - rect.left;
+            });
+
+            // Touch controls
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                touchX = e.touches[0].clientX - rect.left;
+            });
+
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (!gameStarted) {
+                    startGame();
+                } else if (gameState.balls.length > 0 && !gameState.balls[0].launched) {
+                    launchBall(gameState.balls[0]);
+                }
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (e.key === ' ') {
+                e.preventDefault();
+                if (!gameStarted && canvas) {
+                    startGame();
+                } else if (gameState.balls.length > 0 && !gameState.balls[0].launched && gameRunning) {
+                    launchBall(gameState.balls[0]);
+                } else if (paddle.laser && gameRunning) {
+                    fireLaser();
+                }
+            }
+            if (e.key === 's' || e.key === 'S') {
+                soundEnabled = !soundEnabled;
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // Particle System
+        function createParticles(x, y, color, count = 8) {
+            for (let i = 0; i < count; i++) {
+                gameState.particles.push({
+                    x: x,
+                    y: y,
+                    dx: (Math.random() - 0.5) * 8,
+                    dy: (Math.random() - 0.5) * 8,
+                    color: color,
+                    life: 1.0,
+                    decay: Math.random() * 0.02 + 0.01
+                });
+            }
+        }
+
+        function updateParticles() {
+            gameState.particles = gameState.particles.filter(particle => {
+                particle.x += particle.dx;
+                particle.y += particle.dy;
+                particle.dx *= 0.98;
+                particle.dy *= 0.98;
+                particle.life -= particle.decay;
+                return particle.life > 0;
+            });
+        }
+
+        function drawParticles() {
+            gameState.particles.forEach(particle => {
+                ctx.globalAlpha = particle.life;
+                ctx.fillStyle = particle.color;
+                ctx.fillRect(particle.x - 2, particle.y - 2, 4, 4);
+            });
+            ctx.globalAlpha = 1.0;
+        }
+
+        // Power-up System
+        function spawnPowerUp(x, y) {
+            if (Math.random() < 0.3) { // 30% chance to spawn power-up
+                const totalChance = powerUpTypes.reduce((sum, type) => sum + type.chance, 0);
+                let random = Math.random() * totalChance;
+                
+                for (const type of powerUpTypes) {
+                    random -= type.chance;
+                    if (random <= 0) {
+                        gameState.powerUps.push({
+                            x: x,
+                            y: y,
+                            type: type.type,
+                            color: type.color,
+                            symbol: type.symbol,
+                            dy: 2
+                        });
+                        break;
+                    }
+                }
+            }
+        }
+
+        function updatePowerUps() {
+            gameState.powerUps = gameState.powerUps.filter(powerUp => {
+                powerUp.y += powerUp.dy;
+                
+                // Handle laser beams differently
+                if (powerUp.isLaser) {
+                    // Remove laser beams that go off screen
+                    return powerUp.y > 0;
+                }
+                
+                // Check collision with paddle for regular power-ups
+                if (powerUp.y + 10 > paddle.y &&
+                    powerUp.x > paddle.x &&
+                    powerUp.x < paddle.x + paddle.width) {
+                    
+                    activatePowerUp(powerUp.type);
+                    playSound('powerup');
+                    createParticles(powerUp.x, powerUp.y, powerUp.color, 12);
+                    return false; // Remove power-up
+                }
+                
+                return powerUp.y < canvas.height; // Keep if still on screen
+            });
+        }
+
+        function activatePowerUp(type) {
+            switch (type) {
+                case 'multiball':
+                    if (gameState.balls.length < 5) {
+                        const originalBall = gameState.balls[0];
+                        for (let i = 0; i < 2; i++) {
+                            const newBall = { ...ballTemplate };
+                            newBall.x = originalBall.x + (Math.random() - 0.5) * 50;
+                            newBall.y = originalBall.y;
+                            newBall.dx = (Math.random() - 0.5) * 8;
+                            newBall.dy = -ballTemplate.speed;
+                            newBall.launched = true;
+                            newBall.trail = [];
+                            gameState.balls.push(newBall);
+                        }
+                    }
+                    break;
+                case 'bigpaddle':
+                    paddle.width = Math.min(paddle.originalWidth * 1.5, 250);
+                    paddle.powerUpTimer = 600; // 10 seconds at 60fps
+                    break;
+                case 'laser':
+                    paddle.laser = true;
+                    paddle.powerUpTimer = 600; // 10 seconds
+                    break;
+                case 'sticky':
+                    paddle.sticky = true;
+                    paddle.powerUpTimer = 900; // 15 seconds
+                    break;
+                case 'extralife':
+                    lives++;
+                    updateUI();
+                    playSound('life');
+                    break;
+                case 'slowball':
+                    gameState.balls.forEach(ball => {
+                        ball.speed = Math.max(ball.speed * 0.7, 2);
+                        const length = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
+                        ball.dx = (ball.dx / length) * ball.speed;
+                        ball.dy = (ball.dy / length) * ball.speed;
+                    });
+                    break;
+                case 'megaball':
+                    gameState.balls.forEach(ball => {
+                        ball.mega = true;
+                        ball.megaTimer = 300;
+                    });
+                    break;
+            }
+        }
+
+        function initBlocks() {
+            blocks.length = 0;
+            const patterns = [
+                // Pattern 1: Standard rows
+                () => {
+                    for (let row = 0; row < blockRows; row++) {
+                        for (let col = 0; col < blockCols; col++) {
+                            blocks.push(createBlock(col, row, 1));
+                        }
+                    }
+                },
+                // Pattern 2: Diamond
+                () => {
+                    for (let row = 0; row < blockRows; row++) {
+                        const width = Math.max(1, blockCols - Math.abs(row - blockRows/2) * 2);
+                        const start = Math.floor((blockCols - width) / 2);
+                        for (let col = start; col < start + width; col++) {
+                            blocks.push(createBlock(col, row, 1));
+                        }
+                    }
+                },
+                // Pattern 3: Pyramid
+                () => {
+                    for (let row = 0; row < blockRows; row++) {
+                        const width = blockCols - row * 2;
+                        if (width <= 0) break;
+                        const start = row;
+                        for (let col = start; col < start + width; col++) {
+                            blocks.push(createBlock(col, row, 1));
+                        }
+                    }
+                }
+            ];
+            
+            const pattern = patterns[Math.min(level - 1, patterns.length - 1)] || patterns[0];
+            pattern();
+        }
+
+        function createBlock(col, row, hits = 1) {
+            return {
+                x: col * (blockWidth + blockPadding) + blockPadding,
+                y: row * (blockHeight + blockPadding) + 50,
+                width: blockWidth,
+                height: blockHeight,
+                color: blockColors[row % blockColors.length],
+                destroyed: false,
+                hits: hits,
+                maxHits: hits
+            };
+        }
+
+        function resetGame() {
+            gameRunning = false;
+            gamePaused = false;
+            gameStarted = false;
+            score = 0;
+            lives = 3;
+            level = 1;
+            playerName = ''; // Reset player name to prompt again
+            scoreSubmitted = false; // Reset score submission flag
+            
+            if (!canvas) return;
+            
+            // Reset paddle
+            paddle.x = canvas.width / 2 - paddle.width / 2;
+            paddle.width = paddle.originalWidth;
+            paddle.laser = false;
+            paddle.sticky = false;
+            paddle.powerUpTimer = 0;
+            
+            // Reset game state
+            gameState.balls = [];
+            gameState.powerUps = [];
+            gameState.particles = [];
+            gameState.screenShake = 0;
+            gameState.multiplier = 1;
+            gameState.combo = 0;
+            
+            // Initialize first ball
+            const firstBall = { ...ballTemplate };
+            firstBall.x = canvas.width / 2;
+            firstBall.y = paddle.y - 20;
+            gameState.balls = [firstBall];
+            
+            // Reset blocks
+            initBlocks();
+            
+            // Update UI
+            updateUI();
+            
+            // Reset buttons
+            if (pauseBtn) pauseBtn.disabled = true;
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            
+            draw();
+        }
+
+        function startGame() {
+            if (!gameStarted && canvas) {
+                // Always get player name at start of new game
+                let attempts = 0;
+                playerName = ''; // Clear any existing name
+                
+                while (attempts < 3) {
+                    playerName = prompt("🏆 Enter your name for the Hall of Fame:\n\n(Your score will be saved to compete with other players!)", "");
+                    
+                    // User cancelled or entered empty name
+                    if (playerName === null || playerName.trim() === '') {
+                        if (attempts === 0) {
+                            // First attempt - ask if they want to play as Anonymous
+                            if (confirm("🤷‍♂️ No name entered.\n\nWould you like to play as 'Anonymous'?")) {
+                                playerName = "Anonymous";
+                                break;
+                            } else {
+                                attempts++;
+                                continue;
+                            }
+                        } else {
+                            playerName = "Anonymous";
+                            break;
+                        }
+                    }
+                    
+                    playerName = playerName.trim().substring(0, 20); // Limit name length
+                    
+                    // Check for profanity
+                    if (containsProfanityJS(playerName)) {
+                        alert("❌ Please choose an appropriate name.");
+                        playerName = '';
+                        attempts++;
+                        continue;
+                    }
+                    
+                    // Valid name entered
+                    break;
+                }
+                
+                // Final fallback
+                if (!playerName || playerName.trim() === '') {
+                    playerName = "Anonymous";
+                }
+                
+                console.log("Player name set to:", playerName); // Debug log
+                
+                gameStarted = true;
+                gameRunning = true;
+                scoreSubmitted = false; // Ensure score can be submitted for this new game
+                if (pauseBtn) pauseBtn.disabled = false;
+                gameLoop();
+            }
+        }
+
+        function togglePause() {
+            if (gameRunning) {
+                gamePaused = !gamePaused;
+                if (pauseBtn) pauseBtn.textContent = gamePaused ? 'Resume' : 'Pause';
+                if (!gamePaused) {
+                    gameLoop();
+                }
+            }
+        }
+
+        function launchBall(ball) {
+            if (!ball) return;
+            ball.launched = true;
+            ball.dx = (Math.random() - 0.5) * 8;
+            ball.dy = -ball.speed;
+        }
+
+        function fireLaser() {
+            if (!paddle.laser) return;
+            
+            // Create laser beams
+            for (let i = 0; i < 2; i++) {
+                gameState.powerUps.push({
+                    x: paddle.x + paddle.width * (0.25 + i * 0.5),
+                    y: paddle.y,
+                    type: 'laser_beam',
+                    color: '#FFD700',
+                    symbol: '|',
+                    dy: -8,
+                    isLaser: true
+                });
+            }
+        }
+
+        function updatePaddle() {
+            // Keyboard controls
+            if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+                paddle.x -= paddle.speed;
+            }
+            if (keys['ArrowRight'] || keys['d'] || keys['D'] || keys['w'] || keys['W']) {
+                paddle.x += paddle.speed;
+            }
+            
+            // Mouse/touch controls
+            if (mouseX > 0) {
+                paddle.x = mouseX - paddle.width / 2;
+            }
+            if (touchX > 0) {
+                paddle.x = touchX - paddle.width / 2;
+            }
+            
+            // Keep paddle within bounds
+            if (paddle.x < 0) paddle.x = 0;
+            if (paddle.x + paddle.width > canvas.width) {
+                paddle.x = canvas.width - paddle.width;
+            }
+            
+            // Update power-up timers
+            if (paddle.powerUpTimer > 0) {
+                paddle.powerUpTimer--;
+                if (paddle.powerUpTimer <= 0) {
+                    paddle.width = paddle.originalWidth;
+                    paddle.laser = false;
+                    paddle.sticky = false;
+                }
+            }
+            
+            // Move unlaunched balls with paddle
+            gameState.balls.forEach(ball => {
+                if (!ball.launched) {
+                    ball.x = paddle.x + paddle.width / 2;
+                }
+            });
+        }
+
+        function updateBalls() {
+            gameState.balls = gameState.balls.filter(ball => {
+                if (!ball.launched) return true;
+                
+                // Update ball position
+                ball.x += ball.dx;
+                ball.y += ball.dy;
+                
+                // Update ball trail
+                ball.trail.push({ x: ball.x, y: ball.y });
+                if (ball.trail.length > 5) ball.trail.shift();
+                
+                // Update mega ball timer
+                if (ball.megaTimer > 0) {
+                    ball.megaTimer--;
+                    if (ball.megaTimer <= 0) {
+                        ball.mega = false;
+                    }
+                }
+                
+                // Wall collisions
+                if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+                    ball.dx = -ball.dx;
+                    playSound('paddle');
+                }
+                if (ball.y - ball.radius < 0) {
+                    ball.dy = -ball.dy;
+                    playSound('paddle');
+                }
+                
+                // Paddle collision
+                if (ball.y + ball.radius > paddle.y &&
+                    ball.x > paddle.x &&
+                    ball.x < paddle.x + paddle.width &&
+                    ball.dy > 0) {
+                    
+                    playSound('paddle');
+                    gameState.screenShake = 5;
+                    
+                    if (paddle.sticky && ball.launched) {
+                        ball.launched = false;
+                        ball.dx = 0;
+                        ball.dy = 0;
+                        return true;
+                    }
+                    
+                    // Calculate bounce angle based on where ball hits paddle
+                    const hitPos = (ball.x - paddle.x) / paddle.width;
+                    const bounceAngle = (hitPos - 0.5) * Math.PI / 3;
+                    
+                    ball.dx = Math.sin(bounceAngle) * ball.speed;
+                    ball.dy = -Math.cos(bounceAngle) * ball.speed;
+                }
+                
+                // Check if ball fell off screen
+                if (ball.y > canvas.height) {
+                    return false; // Remove this ball
+                }
+                
+                return true; // Keep this ball
+            });
+            
+            // Check if all balls are gone
+            if (gameState.balls.length === 0) {
+                lives--;
+                updateUI();
+                
+                if (lives <= 0) {
+                    gameOver();
+                } else {
+                    resetBalls();
+                }
+            }
+        }
+
+        function checkBlockCollisions() {
+            gameState.balls.forEach(ball => {
+                if (!ball.launched) return;
+                
+                for (let block of blocks) {
+                    if (block.destroyed) continue;
+                    
+                    if (ball.x + ball.radius > block.x &&
+                        ball.x - ball.radius < block.x + block.width &&
+                        ball.y + ball.radius > block.y &&
+                        ball.y - ball.radius < block.y + block.height) {
+                        
+                        // Handle multi-hit blocks
+                        block.hits--;
+                        if (block.hits <= 0) {
+                            block.destroyed = true;
+                            
+                            // Scoring with combo system
+                            gameState.combo++;
+                            const points = 10 * gameState.multiplier * Math.min(gameState.combo, 5);
+                            score += points;
+                            
+                            // Spawn power-up
+                            spawnPowerUp(block.x + block.width / 2, block.y + block.height / 2);
+                            
+                            // Create particles
+                            createParticles(block.x + block.width / 2, block.y + block.height / 2, block.color);
+                        }
+                        
+                        updateUI();
+                        playSound('block');
+                        gameState.screenShake = 3;
+                        
+                        // Ball collision response (improved physics)
+                        const ballCenterX = ball.x;
+                        const ballCenterY = ball.y;
+                        const blockCenterX = block.x + block.width / 2;
+                        const blockCenterY = block.y + block.height / 2;
+                        
+                        const deltaX = ballCenterX - blockCenterX;
+                        const deltaY = ballCenterY - blockCenterY;
+                        
+                        // Determine collision side
+                        if (Math.abs(deltaX / block.width) > Math.abs(deltaY / block.height)) {
+                            ball.dx = -ball.dx; // Hit left or right side
+                        } else {
+                            ball.dy = -ball.dy; // Hit top or bottom
+                        }
+                        
+                        // Mega ball destroys multiple blocks
+                        if (ball.mega) {
+                            const adjacentBlocks = blocks.filter(b => 
+                                !b.destroyed && 
+                                Math.abs(b.x - block.x) <= blockWidth + blockPadding &&
+                                Math.abs(b.y - block.y) <= blockHeight + blockPadding
+                            );
+                            
+                            adjacentBlocks.forEach(adjBlock => {
+                                adjBlock.destroyed = true;
+                                score += 10 * gameState.multiplier;
+                                createParticles(adjBlock.x + adjBlock.width / 2, adjBlock.y + adjBlock.height / 2, adjBlock.color);
+                            });
+                        }
+                        
+                        // Check win condition
+                        if (blocks.every(block => block.destroyed)) {
+                            nextLevel();
+                        }
+                        
+                        break;
+                    }
+                }
+                
+            });
+            
+            // Handle laser beam collisions separately
+            gameState.powerUps.forEach((laser, laserIndex) => {
+                if (!laser.isLaser) return;
+                
+                for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
+                    const block = blocks[blockIndex];
+                    if (block.destroyed) continue;
+                    
+                    if (laser.x >= block.x && laser.x <= block.x + block.width &&
+                        laser.y >= block.y && laser.y <= block.y + block.height) {
+                        
+                        block.destroyed = true;
+                        score += 5 * gameState.multiplier;
+                        updateUI();
+                        playSound('block');
+                        createParticles(block.x + block.width / 2, block.y + block.height / 2, block.color);
+                        
+                        // Remove the laser beam
+                        gameState.powerUps.splice(laserIndex, 1);
+                        
+                        // Check win condition
+                        if (blocks.every(block => block.destroyed)) {
+                            nextLevel();
+                        }
+                        
+                        break;
+                    }
+                }
+            });
+        }
+
+        function resetBalls() {
+            gameState.balls = [];
+            const newBall = { ...ballTemplate };
+            newBall.x = canvas.width / 2;
+            newBall.y = paddle.y - 20;
+            gameState.balls = [newBall];
+            gameState.combo = 0;
+        }
+
+        function nextLevel() {
+            const completedLevel = level;
+            level++;
+            gameState.multiplier = level;
+            
+            // STEP 1: Stop all balls and game action
+            gameState.balls = [];
+            gameState.powerUps = gameState.powerUps.filter(p => p.isLaser);
+            gameState.particles = [];
+            gameState.combo = 0;
+            
+            // STEP 2: Pause the game loop temporarily
+            const wasRunning = gameRunning;
+            gameRunning = false;
+            
+            playSound('win');
+            
+            // STEP 3: Show level completion message immediately
+            setTimeout(() => {
+                alert(`🎉 Level ${completedLevel} Complete!\n\nScore: ${score.toLocaleString()}\nStarting Level ${level}\n\nPress OK to continue...`);
+                
+                // STEP 4: After user acknowledges, set up next level
+                setupNextLevel();
+                
+                if (wasRunning) {
+                    gameRunning = true;
+                    gameLoop(); // Restart the game loop
+                }
+            }, 300);
+        }
+        
+        function setupNextLevel() {
+            // Initialize new level blocks
+            initBlocks();
+            
+            // Reset paddle position and properties
+            paddle.x = canvas.width / 2 - paddle.width / 2;
+            paddle.width = paddle.originalWidth;
+            paddle.laser = false;
+            paddle.sticky = false;
+            paddle.powerUpTimer = 0;
+            
+            // Clear any remaining power-ups and particles
+            gameState.powerUps = [];
+            gameState.particles = [];
+            gameState.combo = 0;
+            gameState.screenShake = 0;
+            
+            // Reset balls to unlaunched state on paddle
+            const newBall = { ...ballTemplate };
+            newBall.x = paddle.x + paddle.width / 2;
+            newBall.y = paddle.y - 20;
+            newBall.speed = Math.min(ballTemplate.speed + (level - 1) * 0.5, 8);
+            newBall.launched = false;
+            gameState.balls = [newBall];
+            
+            // Update UI
+            updateUI();
+            
+            // Draw the new state immediately
+            draw();
+            
+            // Show instruction for launching
+            setTimeout(() => {
+                if (gameRunning) {
+                    alert(`Level ${level} Ready!\n\nPress SPACE to launch the ball!`);
+                }
+            }, 100);
+        }
+
+        async function gameOver() {
+            gameRunning = false;
+            gameStarted = false;
+            if (pauseBtn) pauseBtn.disabled = true;
+            
+            // Submit score to database (only once per game)
+            if (!scoreSubmitted) {
+                scoreSubmitted = true;
+                try {
+                    await submitScore(playerName, score, level);
+                } catch (error) {
+                    console.error('Failed to submit score:', error);
+                }
+            }
+            
+            // Update session personal best
+            const isSessionBest = updatePersonalBest(score);
+            
+            // Check for local high score
+            const isLocalHighScore = setLocalHighScore(score);
+            
+            // Check for all-time high score
+            const isAllTimeHighScore = score > allTimeHighScore.score;
+            
+            let highScoreText = "";
+            if (isAllTimeHighScore) {
+                highScoreText = " NEW ALL-TIME HIGH SCORE!";
+                // Update the all-time high score immediately for display
+                allTimeHighScore = { score: score, player: playerName };
+                // Update the champion display immediately
+                if (allTimeScoreElement) allTimeScoreElement.textContent = score.toLocaleString();
+                if (allTimePlayerElement) allTimePlayerElement.textContent = playerName;
+            } else if (isLocalHighScore) {
+                highScoreText = " NEW LOCAL HIGH SCORE!";
+            } else if (isSessionBest) {
+                highScoreText = " NEW SESSION BEST!";
+            }
+            
+            setTimeout(async () => {
+                alert(`Game Over!${highScoreText}\nPlayer: ${playerName}\nFinal Score: ${score}\nLevel Reached: ${level}`);
+                
+                // Clear player name so they'll be prompted again on next game
+                playerName = '';
+                
+                // Show Hall of Fame
+                await showHighScoreTable();
+            }, 100);
+        }
+
+        async function submitScore(playerName, score, levelReached) {
+            try {
+                const response = await fetch('/breakout_scores.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        player_name: playerName,
+                        score: score,
+                        level_reached: levelReached
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to submit score');
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('Error submitting score:', error);
+                throw error;
+            }
+        }
+
+        async function getHighScores(limit = 10) {
+            try {
+                const response = await fetch(`/breakout_scores.php?limit=${limit}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch Hall of Fame scores');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching Hall of Fame scores:', error);
+                return [];
+            }
+        }
+
+        async function showHighScoreTable() {
+            try {
+                const scores = await getHighScores(10);
+                
+                let tableHTML = `
+                    <div style="background: var(--bg-primary); border: 2px solid var(--border-medium); border-radius: var(--radius-lg); padding: 1.5rem; margin: 1rem auto; max-width: 600px;">
+                        <h3 style="color: var(--primary-color); text-align: center; margin-bottom: 1rem;">🏆 HALL OF FAME 🏆</h3>
+                        <div style="display: grid; grid-template-columns: 60px 1fr 100px 80px; gap: 0.75rem; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light); font-weight: bold; color: var(--text-secondary);">
+                            <div>Rank</div>
+                            <div>Player</div>
+                            <div>Score</div>
+                            <div>Level</div>
+                        </div>
+                `;
+                
+                if (scores.length === 0) {
+                    tableHTML += '<div style="text-align: center; padding: 2rem; color: var(--text-secondary);">No scores yet! Be the first to play!</div>';
+                } else {
+                    scores.forEach((score, index) => {
+                        const rank = index + 1;
+                        const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
+                        const isCurrentPlayer = score.player_name === playerName;
+                        const rowStyle = isCurrentPlayer ? 'background: var(--accent-blue); font-weight: bold;' : '';
+                        
+                        tableHTML += `
+                            <div style="display: grid; grid-template-columns: 60px 1fr 100px 80px; gap: 0.75rem; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border-light); ${rowStyle}">
+                                <div style="text-align: center;">${rankEmoji}</div>
+                                <div style="color: var(--text-primary);">${score.player_name}</div>
+                                <div style="font-family: var(--font-mono); color: var(--primary-color); font-weight: bold;">${score.score.toLocaleString()}</div>
+                                <div style="font-family: var(--font-mono); color: var(--text-secondary);">${score.level_reached}</div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                tableHTML += `
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <button onclick="closeHighScoreTable()" style="background: var(--primary-color); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); font-weight: 500; cursor: pointer;">Close</button>
+                        </div>
+                    </div>
+                `;
+                
+                // Create overlay
+                const overlay = document.createElement('div');
+                overlay.id = 'hall-of-fame-overlay';
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.8);
+                    z-index: 1000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 1rem;
+                `;
+                overlay.innerHTML = tableHTML;
+                document.body.appendChild(overlay);
+                
+            } catch (error) {
+                console.error('Error showing Hall of Fame table:', error);
+                alert('Failed to load Hall of Fame table');
+            }
+        }
+
+        function closeHighScoreTable() {
+            const overlay = document.getElementById('hall-of-fame-overlay');
+            if (overlay) {
+                overlay.remove();
+            }
+        }
+
+        function updateUI() {
+            if (scoreElement) scoreElement.textContent = score;
+            if (livesElement) livesElement.textContent = lives;
+            if (levelElement) levelElement.textContent = level;
+            
+            // Update session personal best if current score is higher
+            if (score > sessionPersonalBest) {
+                sessionPersonalBest = score;
+            }
+            
+            // Update personal best display with current session's highest score
+            if (personalBestElement) {
+                const personalBest = Math.max(sessionPersonalBest, getLocalHighScore());
+                personalBestElement.textContent = personalBest.toLocaleString();
+            }
+        }
+
+        function draw() {
+            if (!canvas || !ctx) return;
+            
+            // Apply screen shake
+            ctx.save();
+            if (gameState.screenShake > 0) {
+                ctx.translate(
+                    (Math.random() - 0.5) * gameState.screenShake,
+                    (Math.random() - 0.5) * gameState.screenShake
+                );
+                gameState.screenShake *= 0.8;
+                if (gameState.screenShake < 0.1) gameState.screenShake = 0;
+            }
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw blocks with enhanced 3D effect
+            for (let block of blocks) {
+                if (!block.destroyed) {
+                    drawBlock(block);
+                }
+            }
+            
+            // Draw power-ups
+            gameState.powerUps.forEach(powerUp => {
+                if (powerUp.isLaser) {
+                    // Draw laser beam
+                    ctx.fillStyle = powerUp.color;
+                    ctx.fillRect(powerUp.x - 2, powerUp.y, 4, 20);
+                } else {
+                    // Draw power-up
+                    ctx.fillStyle = powerUp.color;
+                    ctx.fillRect(powerUp.x - 15, powerUp.y - 8, 30, 16);
+                    
+                    // Draw power-up symbol
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = '12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(powerUp.symbol, powerUp.x, powerUp.y + 4);
+                }
+            });
+            
+            // Draw paddle with enhanced 3D effect and power-up indicators
+            drawPaddle();
+            
+            // Draw all balls with trails
+            gameState.balls.forEach(ball => {
+                drawBall(ball);
+            });
+            
+            // Draw particles
+            drawParticles();
+            
+            // Draw UI overlays
+            drawGameUI();
+            
+            ctx.restore();
+        }
+
+        function drawBlock(block) {
+            const x = block.x;
+            const y = block.y;
+            const w = block.width;
+            const h = block.height;
+            
+            // Adjust color based on hits remaining
+            let color = block.color;
+            if (block.hits < block.maxHits) {
+                // Darken color for damaged blocks
+                const hex = color.replace('#', '');
+                const r = Math.max(0, parseInt(hex.substr(0, 2), 16) - 30);
+                const g = Math.max(0, parseInt(hex.substr(2, 2), 16) - 30);
+                const b = Math.max(0, parseInt(hex.substr(4, 2), 16) - 30);
+                color = `rgb(${r}, ${g}, ${b})`;
+            }
+            
+            // Parse the hex color to create lighter and darker variants
+            const hex = block.color.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            
+            // Create lighter version for highlight
+            const lightR = Math.min(255, r + 60);
+            const lightG = Math.min(255, g + 60);
+            const lightB = Math.min(255, b + 60);
+            
+            // Create darker version for shadow
+            const darkR = Math.max(0, r - 40);
+            const darkG = Math.max(0, g - 40);
+            const darkB = Math.max(0, b - 40);
+            
+            const lightColor = `rgb(${lightR}, ${lightG}, ${lightB})`;
+            const darkColor = `rgb(${darkR}, ${darkG}, ${darkB})`;
+            
+            // Fill main block with original color
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, w, h);
+            
+            // Add highlight on top and left edges
+            ctx.fillStyle = lightColor;
+            ctx.fillRect(x, y, w, 3); // Top highlight
+            ctx.fillRect(x, y, 3, h); // Left highlight
+            
+            // Add shadow on bottom and right edges
+            ctx.fillStyle = darkColor;
+            ctx.fillRect(x, y + h - 3, w, 3); // Bottom shadow
+            ctx.fillRect(x + w - 3, y, 3, h); // Right shadow
+            
+            // Add subtle inner border
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
+            
+            // Show hits remaining for multi-hit blocks
+            if (block.maxHits > 1) {
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(block.hits.toString(), x + w/2, y + h/2 + 3);
+            }
+        }
+
+        function drawPaddle() {
+            let paddleColor = '#4ECDC4'; // Teal color like original
+            
+            // Change color based on power-ups
+            if (paddle.laser) {
+                paddleColor = '#FFD700'; // Gold for laser
+            } else if (paddle.sticky) {
+                paddleColor = '#90EE90'; // Light green for sticky
+            }
+            
+            const x = paddle.x;
+            const y = paddle.y;
+            const w = paddle.width;
+            const h = paddle.height;
+            
+            // Parse the paddle color for 3D effect
+            const hex = paddleColor.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            
+            // Create lighter and darker variants
+            const lightR = Math.min(255, r + 60);
+            const lightG = Math.min(255, g + 60);
+            const lightB = Math.min(255, b + 60);
+            const darkR = Math.max(0, r - 40);
+            const darkG = Math.max(0, g - 40);
+            const darkB = Math.max(0, b - 40);
+            
+            const lightColor = `rgb(${lightR}, ${lightG}, ${lightB})`;
+            const darkColor = `rgb(${darkR}, ${darkG}, ${darkB})`;
+            
+            // Fill main paddle
+            ctx.fillStyle = paddleColor;
+            ctx.fillRect(x, y, w, h);
+            
+            // Add highlight on top and left edges
+            ctx.fillStyle = lightColor;
+            ctx.fillRect(x, y, w, 2); // Top highlight
+            ctx.fillRect(x, y, 2, h); // Left highlight
+            
+            // Add shadow on bottom and right edges
+            ctx.fillStyle = darkColor;
+            ctx.fillRect(x, y + h - 2, w, 2); // Bottom shadow
+            ctx.fillRect(x + w - 2, y, 2, h); // Right shadow
+            
+            // Draw power-up indicators
+            if (paddle.laser) {
+                ctx.fillStyle = '#FFD700';
+                ctx.fillRect(x + w * 0.25 - 2, y - 5, 4, 5);
+                ctx.fillRect(x + w * 0.75 - 2, y - 5, 4, 5);
+            }
+        }
+
+        function drawBall(ball) {
+            // Draw ball trail
+            ctx.globalAlpha = 0.3;
+            for (let i = 0; i < ball.trail.length; i++) {
+                const trailPoint = ball.trail[i];
+                const alpha = (i / ball.trail.length) * 0.3;
+                ctx.globalAlpha = alpha;
+                ctx.beginPath();
+                ctx.arc(trailPoint.x, trailPoint.y, ball.radius * (0.5 + i / ball.trail.length * 0.5), 0, Math.PI * 2);
+                ctx.fillStyle = ball.mega ? '#FF6B6B' : '#888888';
+                ctx.fill();
+                ctx.closePath();
+            }
+            ctx.globalAlpha = 1.0;
+            
+            // Draw main ball
+            let ballColor = '#888888';
+            let ballRadius = ball.radius;
+            
+            if (ball.mega) {
+                ballColor = '#FF6B6B';
+                ballRadius = ball.radius * 1.2;
+            }
+            
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = ballColor;
+            ctx.fill();
+            ctx.closePath();
+            
+            // Add subtle highlight for 3D effect
+            ctx.beginPath();
+            ctx.arc(ball.x - 2, ball.y - 2, ballRadius - 3, 0, Math.PI * 2);
+            ctx.fillStyle = ball.mega ? '#FF9999' : '#BBBBBB';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawGameUI() {
+            // Draw combo indicator
+            if (gameState.combo > 1) {
+                ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
+                ctx.font = 'bold 24px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${gameState.combo}x COMBO!`, canvas.width / 2, 30);
+            }
+            
+            // Draw power-up timer
+            if (paddle.powerUpTimer > 0) {
+                const timerWidth = 100;
+                const timerHeight = 8;
+                const timerX = canvas.width - timerWidth - 20;
+                const timerY = 20;
+                
+                const maxTimer = paddle.sticky ? 900 : 600; // Different max for sticky vs others
+                const progress = paddle.powerUpTimer / maxTimer;
+                
+                // Timer background
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                ctx.fillRect(timerX, timerY, timerWidth, timerHeight);
+                
+                // Timer progress
+                ctx.fillStyle = '#FFD700';
+                ctx.fillRect(timerX, timerY, timerWidth * progress, timerHeight);
+                
+                // Timer label
+                ctx.fillStyle = 'white';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText('Power-up', timerX + timerWidth, timerY - 5);
+            }
+            
+            // Draw start instruction
+            if (!gameStarted) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 24px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('BREAKOUT BY cr0sis', canvas.width / 2, canvas.height / 2 - 60);
+                
+                ctx.font = '16px Arial';
+                ctx.fillText('Press SPACE or CLICK to start', canvas.width / 2, canvas.height / 2 - 20);
+                ctx.fillText('Arrow Keys, WASD, Mouse, or Touch to move', canvas.width / 2, canvas.height / 2);
+                ctx.fillText('Press S to toggle sound', canvas.width / 2, canvas.height / 2 + 20);
+                ctx.fillText('SPACE to fire laser when powered up', canvas.width / 2, canvas.height / 2 + 40);
+            }
+        }
+
+        function gameLoop() {
+            if (!gameRunning || gamePaused) return;
+            
+            updatePaddle();
+            updateBalls();
+            updatePowerUps();
+            updateParticles();
+            checkBlockCollisions();
+            draw();
+            
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        // Override the showTab function to initialize breakout when needed
+        const originalShowTab = showTab;
+        showTab = function(tabName) {
+            originalShowTab(tabName);
+            
+            if (tabName === 'breakout') {
+                // Small delay to ensure DOM is ready
+                setTimeout(() => {
+                    initBreakoutGame();
+                }, 100);
+            }
+        };
+
+        // Dark Mode Toggle Functionality
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // Update the theme
+            if (newTheme === 'dark') {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'theme-toggle-icon fas fa-moon';
+                themeText.textContent = 'Dark';
+            } else {
+                body.removeAttribute('data-theme');
+                themeIcon.className = 'theme-toggle-icon fas fa-sun';
+                themeText.textContent = 'Light';
+            }
+            
+            // Save preference to localStorage
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Initialize theme on page load
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            // Use saved theme or system preference
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            
+            if (theme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'theme-toggle-icon fas fa-moon';
+                themeText.textContent = 'Dark';
+            } else {
+                document.body.removeAttribute('data-theme');
+                themeIcon.className = 'theme-toggle-icon fas fa-sun';
+                themeText.textContent = 'Light';
+            }
+        }
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                // Only auto-switch if user hasn't manually set a preference
+                if (e.matches) {
+                    document.body.setAttribute('data-theme', 'dark');
+                    document.getElementById('theme-icon').className = 'theme-toggle-icon fas fa-moon';
+                    document.getElementById('theme-text').textContent = 'Dark';
+                } else {
+                    document.body.removeAttribute('data-theme');
+                    document.getElementById('theme-icon').className = 'theme-toggle-icon fas fa-sun';
+                    document.getElementById('theme-text').textContent = 'Light';
+                }
+            }
+        });
+
+        // Initialize theme and restore saved tab when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTheme();
+            
+            // Restore previously selected tab or default to rizon
+            const savedTab = localStorage.getItem('mainSiteActiveTab') || 'rizon';
+            
+            // Show the saved/default tab without saving to storage (to avoid loop)
+            showTab(savedTab, false);
+        });
+    </script>
+</body>
+</html>

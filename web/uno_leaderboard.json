@@ -1,0 +1,28 @@
+{
+  "networks": {
+    "Rizon": {
+      "total_games": 0,
+      "players": []
+    },
+    "Libera": {
+      "total_games": 1,
+      "players": [
+        {
+          "player": "cr0sis",
+          "total_score": 0,
+          "games_played": 1,
+          "wins": 1,
+          "avg_score": 0.0
+        },
+        {
+          "player": "monqui",
+          "total_score": 27,
+          "games_played": 1,
+          "wins": 0,
+          "avg_score": 27.0
+        }
+      ]
+    }
+  },
+  "last_updated": "2025-07-18T23:33:07.131180"
+}

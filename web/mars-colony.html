@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mars Colony - Escape to the Red Planet</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(45deg, #1a0033, #4d0066, #660033, #330066);
+            background-size: 400% 400%;
+            animation: earthDecay 20s ease-in-out infinite;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        @keyframes earthDecay {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .game-screen {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #ff6b35;
+            text-shadow: 0 0 20px #ff6b35;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            color: #ffaa00;
+            opacity: 0.9;
+        }
+
+        .earth-status {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 40px;
+            max-width: 600px;
+        }
+
+        .login-form {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff88;
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #00ff88;
+            font-weight: 700;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ff88;
+            border-radius: 5px;
+            color: #ffffff;
+            font-family: 'Orbitron', monospace;
+            font-size: 16px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            box-shadow: 0 0 10px #00ff88;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b35, #ff8c42);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            color: white;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        /* Game Interface */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #00ff88;
+        }
+
+        .player-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .resource-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #555;
+        }
+
+        .resource-icon {
+            width: 20px;
+            height: 20px;
+            background: #ff6b35;
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .main-game {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            height: calc(100vh - 140px);
+        }
+
+        .game-world {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff88;
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .panel {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ff6b35;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .panel h3 {
+            color: #ff6b35;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        /* Pixel Art World */
+        .world-view {
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, #4a4a4a 2px, transparent 2px),
+                radial-gradient(circle at 80% 80%, #3a3a3a 1px, transparent 1px),
+                linear-gradient(180deg, #2d1b69 0%, #11001a 100%);
+            background-size: 50px 50px, 30px 30px, 100% 100%;
+            position: relative;
+            image-rendering: pixelated;
+            animation: worldPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes worldPulse {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(0.8); }
+        }
+
+        .building {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #666;
+            border: 2px solid #888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            image-rendering: pixelated;
+        }
+
+        .building:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px #00ff88;
+        }
+
+        .building.factory {
+            background: linear-gradient(45deg, #ff6b35, #ff8c42);
+        }
+
+        .building.lab {
+            background: linear-gradient(45deg, #00ff88, #00cc77);
+        }
+
+        .building.rocket {
+            background: linear-gradient(45deg, #ff0066, #cc0055);
+            width: 60px;
+            height: 80px;
+        }
+
+        /* Progress Bars */
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #00ff88, #00cc77);
+            width: 0%;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.2) 25%, rgba(255,255,255,0.2) 50%, transparent 50%, transparent 75%, rgba(255,255,255,0.2) 75%);
+            background-size: 20px 20px;
+            animation: progressStripes 1s linear infinite;
+        }
+
+        @keyframes progressStripes {
+            0% { background-position: 0 0; }
+            100% { background-position: 20px 0; }
+        }
+
+        /* Alerts and Notifications */
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 107, 53, 0.9);
+            border: 2px solid #ff6b35;
+            border-radius: 10px;
+            padding: 15px;
+            max-width: 300px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .pixel-button {
+            background: #ff6b35;
+            border: 2px solid #ff8c42;
+            color: white;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 4px;
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            image-rendering: pixelated;
+        }
+
+        .pixel-button:hover {
+            background: #ff8c42;
+            transform: translateY(-1px);
+        }
+
+        .pixel-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Mars Phase Styling */
+        .mars-world {
+            background: 
+                radial-gradient(circle at 30% 30%, #cc4400 2px, transparent 2px),
+                radial-gradient(circle at 70% 70%, #990000 1px, transparent 1px),
+                linear-gradient(180deg, #cc4400 0%, #661100 100%);
+            background-size: 60px 60px, 40px 40px, 100% 100%;
+        }
+
+        .alien {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #00ff00;
+            border-radius: 50%;
+            animation: alienMove 3s linear infinite;
+            cursor: crosshair;
+        }
+
+        @keyframes alienMove {
+            0% { transform: translateX(0px); }
+            50% { transform: translateX(20px); }
+            100% { transform: translateX(0px); }
+        }
+
+        .research-tree {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .research-node {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #666;
+            border-radius: 5px;
+            padding: 8px;
+            text-align: center;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .research-node.available {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .research-node.completed {
+            border-color: #ff6b35;
+            background: rgba(255, 107, 53, 0.2);
+        }
+
+        .phase-indicator {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 2px solid #ff6b35;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .main-game {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto;
+            }
+            
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .game-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div class="login-screen" id="loginScreen">
+            <h1 class="title">🚀 MARS COLONY 🚀</h1>
+            <p class="subtitle">Escape the Dying Earth</p>
+            
+            <div class="earth-status">
+                <h3>⚠️ EARTH STATUS: CRITICAL ⚠️</h3>
+                <p>Climate collapse accelerating. Oxygen levels dropping. Time remaining: Unknown.</p>
+                <p><strong>MISSION:</strong> Establish sustainable Mars colony before it's too late!</p>
+            </div>
+            
+            <div class="login-form">
+                <div class="input-group">
+                    <label for="username">Commander Name:</label>
+                    <input type="text" id="username" placeholder="Enter your commander name" maxlength="20">
+                </div>
+                <button class="btn" onclick="startGame()">🚀 Begin Mission</button>
+                <button class="btn" onclick="loadGame()">📁 Continue Mission</button>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="game-screen" id="gameScreen">
+            <div class="game-header">
+                <div class="player-info">
+                    <h2 id="playerName">Commander</h2>
+                    <div class="resource-bar">
+                        <div class="resource-icon" style="background: #ffaa00;"></div>
+                        <span id="energy">0</span> Energy
+                    </div>
+                    <div class="resource-bar">
+                        <div class="resource-icon" style="background: #00aaff;"></div>
+                        <span id="water">0</span> Water
+                    </div>
+                    <div class="resource-bar">
+                        <div class="resource-icon" style="background: #00ff88;"></div>
+                        <span id="food">0</span> Food
+                    </div>
+                    <div class="resource-bar">
+                        <div class="resource-icon" style="background: #ff6b35;"></div>
+                        <span id="research">0</span> Research
+                    </div>
+                </div>
+                <div>
+                    <button class="btn" onclick="saveGame()">💾 Save</button>
+                    <button class="btn" onclick="logout()">🚪 Exit</button>
+                </div>
+            </div>
+
+            <div class="main-game">
+                <div class="game-world">
+                    <div class="phase-indicator" id="phaseIndicator">Phase 1: Earth Preparation</div>
+                    <div class="world-view" id="worldView">
+                        <!-- Buildings and game objects will be dynamically added here -->
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="panel">
+                        <h3>🏭 Buildings</h3>
+                        <button class="pixel-button" onclick="buildStructure('factory')" id="buildFactory">
+                            Factory (10 Energy)
+                        </button>
+                        <button class="pixel-button" onclick="buildStructure('lab')" id="buildLab">
+                            Research Lab (20 Energy)
+                        </button>
+                        <button class="pixel-button" onclick="buildStructure('rocket')" id="buildRocket">
+                            Rocket Launch Pad (100 Energy)
+                        </button>
+                    </div>
+
+                    <div class="panel">
+                        <h3>🔬 Research</h3>
+                        <div class="research-tree" id="researchTree">
+                            <!-- Research nodes will be dynamically generated -->
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <h3>📊 Mission Progress</h3>
+                        <div>
+                            <label>Earth Escape Progress:</label>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="earthProgress"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <label>Mars Colonization:</label>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="marsProgress"></div>
+                            </div>
+                        </div>
+                        <div id="missionStats">
+                            <p>Days Survived: <span id="daysSurvived">0</span></p>
+                            <p>Population: <span id="population">1</span></p>
+                            <p>Buildings Built: <span id="buildingsBuilt">0</span></p>
+                        </div>
+                    </div>
+
+                    <div class="panel" id="marsPanel" style="display: none;">
+                        <h3>🔴 Mars Operations</h3>
+                        <button class="pixel-button" onclick="terraform()">
+                            Terraform (50 Research)
+                        </button>
+                        <button class="pixel-button" onclick="huntAliens()">
+                            Hunt Aliens (10 Energy)
+                        </button>
+                        <div>
+                            <label>Atmosphere:</label>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="atmosphere" style="background: linear-gradient(45deg, #ff6b35, #ffaa00);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            player: {
+                name: '',
+                level: 1,
+                experience: 0
+            },
+            resources: {
+                energy: 10,
+                water: 5,
+                food: 5,
+                research: 0
+            },
+            buildings: [],
+            research: {
+                completed: [],
+                available: ['basic_energy', 'water_recycling', 'food_growth']
+            },
+            stats: {
+                daysSurvived: 0,
+                population: 1,
+                buildingsBuilt: 0,
+                aliensDefeated: 0
+            },
+            mars: {
+                atmosphere: 0,
+                terraformed: 0,
+                aliensRemaining: 100
+            },
+            phase: 1, // 1 = Earth prep, 2 = Mars colonization
+            lastSaved: Date.now(),
+            gameStarted: Date.now()
+        };
+
+        // Research Tree Data
+        const researchData = {
+            basic_energy: { name: 'Basic Energy', cost: 10, unlocks: ['solar_panels'] },
+            water_recycling: { name: 'Water Recycle', cost: 15, unlocks: ['hydroponics'] },
+            food_growth: { name: 'Food Production', cost: 12, unlocks: ['greenhouse'] },
+            solar_panels: { name: 'Solar Panels', cost: 25, unlocks: ['advanced_energy'] },
+            hydroponics: { name: 'Hydroponics', cost: 30, unlocks: ['mars_agriculture'] },
+            greenhouse: { name: 'Greenhouse', cost: 20, unlocks: ['food_preservation'] },
+            rocket_tech: { name: 'Rocket Tech', cost: 50, unlocks: ['mars_landing'] },
+            mars_landing: { name: 'Mars Landing', cost: 100, unlocks: ['terraforming'] },
+            terraforming: { name: 'Terraforming', cost: 150, unlocks: ['atmosphere_gen'] }
+        };
+
+        // Building costs and effects
+        const buildingData = {
+            factory: { cost: { energy: 10 }, produces: { energy: 2 }, icon: '🏭' },
+            lab: { cost: { energy: 20 }, produces: { research: 1 }, icon: '🔬' },
+            rocket: { cost: { energy: 100, research: 50 }, produces: {}, icon: '🚀' }
+        };
+
+        function startGame() {
+            const username = document.getElementById('username').value.trim();
+            if (!username) {
+                alert('Please enter a commander name!');
+                return;
+            }
+            
+            gameState.player.name = username;
+            gameState.gameStarted = Date.now();
+            gameState.lastSaved = Date.now();
+            
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            
+            initializeGame();
+            startGameLoop();
+        }
+
+        function loadGame() {
+            const savedGame = localStorage.getItem('marsColonyGame');
+            if (savedGame) {
+                gameState = JSON.parse(savedGame);
+                calculateOfflineProgress();
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('gameScreen').style.display = 'block';
+                initializeGame();
+                startGameLoop();
+            } else {
+                alert('No saved game found!');
+            }
+        }
+
+        function calculateOfflineProgress() {
+            const now = Date.now();
+            const offlineTime = Math.floor((now - gameState.lastSaved) / 1000); // seconds offline
+            const offlineMinutes = Math.floor(offlineTime / 60);
+            
+            if (offlineMinutes > 0) {
+                // Calculate offline resource generation
+                let energyGained = 0;
+                let researchGained = 0;
+                
+                gameState.buildings.forEach(building => {
+                    if (building.type === 'factory') {
+                        energyGained += buildingData.factory.produces.energy * offlineMinutes;
+                    } else if (building.type === 'lab') {
+                        researchGained += buildingData.lab.produces.research * offlineMinutes;
+                    }
+                });
+                
+                gameState.resources.energy += energyGained;
+                gameState.resources.research += researchGained;
+                gameState.stats.daysSurvived += Math.floor(offlineMinutes / 60); // 1 day per hour offline
+                
+                if (energyGained > 0 || researchGained > 0) {
+                    showAlert(`Welcome back! While offline you gained: ${energyGained} Energy, ${researchGained} Research`);
+                }
+            }
+            
+            gameState.lastSaved = now;
+        }
+
+        function initializeGame() {
+            document.getElementById('playerName').textContent = `Commander ${gameState.player.name}`;
+            updateUI();
+            renderWorld();
+            renderResearchTree();
+            
+            // Check if player should be in Mars phase
+            if (gameState.phase === 2 || gameState.buildings.some(b => b.type === 'rocket')) {
+                enterMarsPhase();
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('energy').textContent = Math.floor(gameState.resources.energy);
+            document.getElementById('water').textContent = Math.floor(gameState.resources.water);
+            document.getElementById('food').textContent = Math.floor(gameState.resources.food);
+            document.getElementById('research').textContent = Math.floor(gameState.resources.research);
+            
+            document.getElementById('daysSurvived').textContent = gameState.stats.daysSurvived;
+            document.getElementById('population').textContent = gameState.stats.population;
+            document.getElementById('buildingsBuilt').textContent = gameState.stats.buildingsBuilt;
+            
+            // Update progress bars
+            const earthProgress = Math.min(100, (gameState.stats.buildingsBuilt / 10) * 100);
+            document.getElementById('earthProgress').style.width = earthProgress + '%';
+            
+            const marsProgress = Math.min(100, gameState.mars.terraformed);
+            document.getElementById('marsProgress').style.width = marsProgress + '%';
+            
+            if (gameState.phase === 2) {
+                document.getElementById('atmosphere').style.width = gameState.mars.atmosphere + '%';
+            }
+            
+            // Update building buttons
+            updateBuildingButtons();
+        }
+
+        function updateBuildingButtons() {
+            const canAffordFactory = gameState.resources.energy >= buildingData.factory.cost.energy;
+            const canAffordLab = gameState.resources.energy >= buildingData.lab.cost.energy;
+            const canAffordRocket = gameState.resources.energy >= buildingData.rocket.cost.energy && 
+                                   gameState.resources.research >= buildingData.rocket.cost.research;
+            
+            document.getElementById('buildFactory').disabled = !canAffordFactory;
+            document.getElementById('buildLab').disabled = !canAffordLab;
+            document.getElementById('buildRocket').disabled = !canAffordRocket;
+        }
+
+        function renderWorld() {
+            const worldView = document.getElementById('worldView');
+            
+            // Clear existing buildings
+            const existingBuildings = worldView.querySelectorAll('.building');
+            existingBuildings.forEach(b => b.remove());
+            
+            // Render buildings
+            gameState.buildings.forEach((building, index) => {
+                const buildingEl = document.createElement('div');
+                buildingEl.className = `building ${building.type}`;
+                buildingEl.style.left = building.x + 'px';
+                buildingEl.style.top = building.y + 'px';
+                buildingEl.title = `${building.type} - Level ${building.level}`;
+                buildingEl.onclick = () => upgradeBuilding(index);
+                
+                // Add building icon
+                buildingEl.innerHTML = `<div style="text-align: center; line-height: 36px;">${buildingData[building.type].icon}</div>`;
+                
+                worldView.appendChild(buildingEl);
+            });
+            
+            // Add aliens if in Mars phase
+            if (gameState.phase === 2) {
+                renderAliens();
+            }
+        }
+
+        function renderAliens() {
+            const worldView = document.getElementById('worldView');
+            const existingAliens = worldView.querySelectorAll('.alien');
+            existingAliens.forEach(a => a.remove());
+            
+            // Add some aliens based on remaining count
+            const alienCount = Math.min(5, Math.floor(gameState.mars.aliensRemaining / 20));
+            for (let i = 0; i < alienCount; i++) {
+                const alien = document.createElement('div');
+                alien.className = 'alien';
+                alien.style.left = Math.random() * (worldView.offsetWidth - 30) + 'px';
+                alien.style.top = Math.random() * (worldView.offsetHeight - 30) + 'px';
+                alien.onclick = () => attackAlien(alien);
+                alien.innerHTML = '👽';
+                worldView.appendChild(alien);
+            }
+        }
+
+        function renderResearchTree() {
+            const researchTree = document.getElementById('researchTree');
+            researchTree.innerHTML = '';
+            
+            Object.keys(researchData).forEach(researchId => {
+                const research = researchData[researchId];
+                const node = document.createElement('div');
+                node.className = 'research-node';
+                
+                if (gameState.research.completed.includes(researchId)) {
+                    node.classList.add('completed');
+                } else if (gameState.research.available.includes(researchId)) {
+                    node.classList.add('available');
+                    node.onclick = () => conductResearch(researchId);
+                }
+                
+                node.innerHTML = `
+                    <div>${research.name}</div>
+                    <div style="font-size: 8px;">Cost: ${research.cost}</div>
+                `;
+                
+                researchTree.appendChild(node);
+            });
+        }
+
+        function buildStructure(type) {
+            const buildingCost = buildingData[type].cost;
+            
+            // Check if player can afford it
+            if (buildingCost.energy && gameState.resources.energy < buildingCost.energy) return;
+            if (buildingCost.research && gameState.resources.research < buildingCost.research) return;
+            
+            // Deduct resources
+            Object.keys(buildingCost).forEach(resource => {
+                gameState.resources[resource] -= buildingCost[resource];
+            });
+            
+            // Add building
+            const worldView = document.getElementById('worldView');
+            const building = {
+                type: type,
+                level: 1,
+                x: Math.random() * (worldView.offsetWidth - 60),
+                y: Math.random() * (worldView.offsetHeight - 80),
+                built: Date.now()
+            };
+            
+            gameState.buildings.push(building);
+            gameState.stats.buildingsBuilt++;
+            
+            // Special handling for rocket
+            if (type === 'rocket') {
+                setTimeout(() => {
+                    showAlert('🚀 Rocket completed! Preparing for Mars launch...');
+                    setTimeout(() => {
+                        enterMarsPhase();
+                    }, 2000);
+                }, 1000);
+            }
+            
+            updateUI();
+            renderWorld();
+        }
+
+        function conductResearch(researchId) {
+            const research = researchData[researchId];
+            
+            if (gameState.resources.research >= research.cost) {
+                gameState.resources.research -= research.cost;
+                gameState.research.completed.push(researchId);
+                gameState.research.available = gameState.research.available.filter(r => r !== researchId);
+                
+                // Unlock new research
+                if (research.unlocks) {
+                    research.unlocks.forEach(unlock => {
+                        if (!gameState.research.available.includes(unlock) && 
+                            !gameState.research.completed.includes(unlock)) {
+                            gameState.research.available.push(unlock);
+                        }
+                    });
+                }
+                
+                showAlert(`🔬 Research completed: ${research.name}`);
+                updateUI();
+                renderResearchTree();
+            }
+        }
+
+        function enterMarsPhase() {
+            gameState.phase = 2;
+            document.getElementById('phaseIndicator').textContent = 'Phase 2: Mars Colonization';
+            document.getElementById('worldView').classList.add('mars-world');
+            document.getElementById('marsPanel').style.display = 'block';
+            
+            // Add terraforming research if not available
+            if (!gameState.research.available.includes('terraforming') && 
+                !gameState.research.completed.includes('terraforming')) {
+                gameState.research.available.push('terraforming');
+            }
+            
+            showAlert('🚀 Welcome to Mars! Begin terraforming operations.');
+            renderWorld();
+            renderResearchTree();
+        }
+
+        function terraform() {
+            if (gameState.resources.research >= 50) {
+                gameState.resources.research -= 50;
+                gameState.mars.terraformed += 5;
+                gameState.mars.atmosphere += 2;
+                
+                if (gameState.mars.atmosphere > 100) gameState.mars.atmosphere = 100;
+                if (gameState.mars.terraformed > 100) gameState.mars.terraformed = 100;
+                
+                showAlert('🌱 Terraforming progress made!');
+                updateUI();
+            }
+        }
+
+        function huntAliens() {
+            if (gameState.resources.energy >= 10 && gameState.mars.aliensRemaining > 0) {
+                gameState.resources.energy -= 10;
+                gameState.mars.aliensRemaining -= Math.floor(Math.random() * 3) + 1;
+                gameState.stats.aliensDefeated++;
+                
+                if (gameState.mars.aliensRemaining <= 0) {
+                    showAlert('🎉 All aliens eliminated! Mars is now safe for colonization!');
+                    gameState.mars.aliensRemaining = 0;
+                } else {
+                    showAlert('💥 Aliens eliminated! Keep hunting.');
+                }
+                
+                renderWorld();
+                updateUI();
+            }
+        }
+
+        function attackAlien(alienElement) {
+            alienElement.remove();
+            gameState.mars.aliensRemaining--;
+            gameState.stats.aliensDefeated++;
+            gameState.resources.research += 2; // Research gained from studying aliens
+            
+            showAlert('👽 Alien defeated! +2 Research gained.');
+            updateUI();
+        }
+
+        function upgradeBuilding(buildingIndex) {
+            const building = gameState.buildings[buildingIndex];
+            const upgradeCost = building.level * 20;
+            
+            if (gameState.resources.energy >= upgradeCost) {
+                gameState.resources.energy -= upgradeCost;
+                building.level++;
+                showAlert(`🏗️ ${building.type} upgraded to level ${building.level}!`);
+                updateUI();
+                renderWorld();
+            }
+        }
+
+        function startGameLoop() {
+            setInterval(() => {
+                gameLoop();
+            }, 1000); // Update every second
+        }
+
+        function gameLoop() {
+            // Generate resources from buildings
+            gameState.buildings.forEach(building => {
+                const produces = buildingData[building.type].produces;
+                Object.keys(produces).forEach(resource => {
+                    gameState.resources[resource] += produces[resource] * building.level;
+                });
+            });
+            
+            // Natural resource consumption/generation
+            gameState.resources.energy += 0.1; // Slow energy regeneration
+            
+            // Increment survival time
+            if (Math.random() < 0.01) { // 1% chance per second
+                gameState.stats.daysSurvived++;
+            }
+            
+            updateUI();
+            
+            // Auto-save every 30 seconds
+            if (Date.now() - gameState.lastSaved > 30000) {
+                saveGame(false);
+            }
+        }
+
+        function saveGame(showMessage = true) {
+            gameState.lastSaved = Date.now();
+            localStorage.setItem('marsColonyGame', JSON.stringify(gameState));
+            if (showMessage) {
+                showAlert('💾 Game saved successfully!');
+            }
+        }
+
+        function logout() {
+            if (confirm('Save before exiting?')) {
+                saveGame();
+            }
+            location.reload();
+        }
+
+        function showAlert(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert';
+            alertDiv.textContent = message;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        // Initialize research tree on load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auto-load if there's a saved game
+            const savedGame = localStorage.getItem('marsColonyGame');
+            if (savedGame) {
+                const loadBtn = document.createElement('p');
+                loadBtn.innerHTML = '<em>💾 Saved game detected - click "Continue Mission" to resume</em>';
+                loadBtn.style.color = '#00ff88';
+                loadBtn.style.marginTop = '10px';
+                document.querySelector('.login-form').appendChild(loadBtn);
+            }
+        });
+    </script>
+</body>
+</html>

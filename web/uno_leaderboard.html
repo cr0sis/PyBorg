@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNO Leaderboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .leaderboard {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .rank {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .rank-1 { color: #ffd700; }
+        .rank-2 { color: #c0c0c0; }
+        .rank-3 { color: #cd7f32; }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f4f8;
+            border-radius: 5px;
+        }
+        .stat-box {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        .last-updated {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎮 UNO Leaderboard 🏆</h1>
+        <p>IRC Bot UNO Game Rankings</p>
+    </div>
+
+    <div class="leaderboard">
+        <h2>Top Players</h2>
+        <div id="stats"></div>
+        <table id="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Total Score</th>
+                    <th>Games Played</th>
+                    <th>Wins</th>
+                    <th>Win Rate</th>
+                    <th>Average Score</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 40px;">
+                        Loading leaderboard...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="last-updated" id="last-updated"></div>
+    </div>
+
+    <script>
+        function loadLeaderboard() {
+            fetch('api/uno_leaderboard.php')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('leaderboard-body');
+                    const statsDiv = document.getElementById('stats');
+                    const lastUpdated = document.getElementById('last-updated');
+                    
+                    // Clear existing content
+                    tbody.innerHTML = '';
+                    
+                    if (data.leaderboard && data.leaderboard.length > 0) {
+                        // Display stats
+                        const totalGames = data.leaderboard.reduce((sum, p) => sum + p.games_played, 0);
+                        const totalPlayers = data.leaderboard.length;
+                        const topPlayer = data.leaderboard[0];
+                        
+                        statsDiv.innerHTML = `
+                            <div class="stat-box">
+                                <div class="stat-number">${totalPlayers}</div>
+                                <div class="stat-label">Total Players</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number">${totalGames}</div>
+                                <div class="stat-label">Games Played</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number">${topPlayer.player}</div>
+                                <div class="stat-label">Top Player</div>
+                            </div>
+                        `;
+                        
+                        // Display leaderboard
+                        data.leaderboard.forEach((player, index) => {
+                            const row = document.createElement('tr');
+                            const rankClass = index < 3 ? `rank-${index + 1}` : '';
+                            const rankEmoji = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
+                            const winRate = player.games_played > 0 ? ((player.wins / player.games_played) * 100).toFixed(1) : '0.0';
+                            
+                            row.innerHTML = `
+                                <td class="rank ${rankClass}">${rankEmoji}</td>
+                                <td><strong>${player.player}</strong></td>
+                                <td>${player.total_score}</td>
+                                <td>${player.games_played}</td>
+                                <td>${player.wins}</td>
+                                <td>${winRate}%</td>
+                                <td>${player.avg_score}</td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                        
+                        // Update last updated time
+                        if (data.last_updated) {
+                            const date = new Date(data.last_updated);
+                            lastUpdated.textContent = `Last updated: ${date.toLocaleString()}`;
+                        }
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">No games played yet!</td></tr>';
+                        statsDiv.innerHTML = '<div class="stat-box"><div class="stat-number">0</div><div class="stat-label">No Data</div></div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading leaderboard:', error);
+                    document.getElementById('leaderboard-body').innerHTML = 
+                        '<tr><td colspan="7" style="text-align: center; padding: 40px; color: red;">Error loading leaderboard data</td></tr>';
+                });
+        }
+        
+        // Load leaderboard on page load
+        loadLeaderboard();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(loadLeaderboard, 30000);
+    </script>
+</body>
+</html>

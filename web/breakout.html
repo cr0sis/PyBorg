@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breakout Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #222;
+            font-family: Arial, sans-serif;
+        }
+        
+        .game-container {
+            text-align: center;
+        }
+        
+        canvas {
+            border: 2px solid #fff;
+            background-color: #000;
+        }
+        
+        .ui {
+            color: #fff;
+            margin: 20px 0;
+        }
+        
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .controls {
+            margin-top: 20px;
+            color: #ccc;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 style="color: #fff; margin-bottom: 20px;">BREAKOUT</h1>
+        
+        <div class="ui">
+            <div class="score">Score: <span id="score">0</span></div>
+            <div>Lives: <span id="lives">3</span></div>
+        </div>
+        
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div class="ui">
+            <button id="startBtn" onclick="startGame()">Start Game</button>
+            <button id="pauseBtn" onclick="togglePause()" disabled>Pause</button>
+            <button id="resetBtn" onclick="resetGame()">Reset</button>
+        </div>
+        
+        <div class="controls">
+            <p>Use LEFT and RIGHT arrow keys or A and D to move the paddle</p>
+            <p>Press SPACE to launch the ball</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const livesElement = document.getElementById('lives');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Game variables
+        let gameRunning = false;
+        let gamePaused = false;
+        let gameStarted = false;
+        let score = 0;
+        let lives = 3;
+        let animationId;
+
+        // Paddle
+        const paddle = {
+            x: canvas.width / 2 - 75,
+            y: canvas.height - 30,
+            width: 150,
+            height: 15,
+            speed: 8
+        };
+
+        // Ball
+        const ball = {
+            x: canvas.width / 2,
+            y: paddle.y - 20,
+            radius: 10,
+            dx: 0,
+            dy: 0,
+            speed: 5,
+            launched: false
+        };
+
+        // Blocks
+        const blocks = [];
+        const blockRows = 8;
+        const blockCols = 10;
+        const blockWidth = 75;
+        const blockHeight = 20;
+        const blockPadding = 5;
+        const blockColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F'];
+
+        // Input handling
+        const keys = {};
+        
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (e.key === ' ') {
+                e.preventDefault();
+                if (!ball.launched && gameRunning) {
+                    launchBall();
+                }
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        function initBlocks() {
+            blocks.length = 0;
+            for (let row = 0; row < blockRows; row++) {
+                for (let col = 0; col < blockCols; col++) {
+                    blocks.push({
+                        x: col * (blockWidth + blockPadding) + blockPadding,
+                        y: row * (blockHeight + blockPadding) + 50,
+                        width: blockWidth,
+                        height: blockHeight,
+                        color: blockColors[row % blockColors.length],
+                        destroyed: false
+                    });
+                }
+            }
+        }
+
+        function resetGame() {
+            gameRunning = false;
+            gamePaused = false;
+            gameStarted = false;
+            score = 0;
+            lives = 3;
+            
+            // Reset paddle
+            paddle.x = canvas.width / 2 - paddle.width / 2;
+            
+            // Reset ball
+            ball.x = canvas.width / 2;
+            ball.y = paddle.y - 20;
+            ball.dx = 0;
+            ball.dy = 0;
+            ball.launched = false;
+            
+            // Reset blocks
+            initBlocks();
+            
+            // Update UI
+            updateUI();
+            
+            // Reset buttons
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+        }
+
+        function startGame() {
+            if (!gameStarted) {
+                gameStarted = true;
+                gameRunning = true;
+                startBtn.disabled = true;
+                pauseBtn.disabled = false;
+                gameLoop();
+            }
+        }
+
+        function togglePause() {
+            if (gameRunning) {
+                gamePaused = !gamePaused;
+                pauseBtn.textContent = gamePaused ? 'Resume' : 'Pause';
+                if (!gamePaused) {
+                    gameLoop();
+                }
+            }
+        }
+
+        function launchBall() {
+            ball.launched = true;
+            ball.dx = (Math.random() - 0.5) * 8;
+            ball.dy = -ball.speed;
+        }
+
+        function updatePaddle() {
+            if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+                paddle.x -= paddle.speed;
+            }
+            if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+                paddle.x += paddle.speed;
+            }
+            
+            // Keep paddle within bounds
+            if (paddle.x < 0) paddle.x = 0;
+            if (paddle.x + paddle.width > canvas.width) {
+                paddle.x = canvas.width - paddle.width;
+            }
+            
+            // Move ball with paddle if not launched
+            if (!ball.launched) {
+                ball.x = paddle.x + paddle.width / 2;
+            }
+        }
+
+        function updateBall() {
+            if (!ball.launched) return;
+            
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+            
+            // Wall collisions
+            if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+                ball.dx = -ball.dx;
+            }
+            if (ball.y - ball.radius < 0) {
+                ball.dy = -ball.dy;
+            }
+            
+            // Paddle collision
+            if (ball.y + ball.radius > paddle.y &&
+                ball.x > paddle.x &&
+                ball.x < paddle.x + paddle.width &&
+                ball.dy > 0) {
+                
+                // Calculate bounce angle based on where ball hits paddle
+                const hitPos = (ball.x - paddle.x) / paddle.width;
+                const bounceAngle = (hitPos - 0.5) * Math.PI / 3;
+                
+                ball.dx = Math.sin(bounceAngle) * ball.speed;
+                ball.dy = -Math.cos(bounceAngle) * ball.speed;
+            }
+            
+            // Check if ball fell off screen
+            if (ball.y > canvas.height) {
+                lives--;
+                updateUI();
+                
+                if (lives <= 0) {
+                    gameOver();
+                } else {
+                    resetBall();
+                }
+            }
+        }
+
+        function checkBlockCollisions() {
+            for (let block of blocks) {
+                if (block.destroyed) continue;
+                
+                if (ball.x + ball.radius > block.x &&
+                    ball.x - ball.radius < block.x + block.width &&
+                    ball.y + ball.radius > block.y &&
+                    ball.y - ball.radius < block.y + block.height) {
+                    
+                    block.destroyed = true;
+                    score += 10;
+                    updateUI();
+                    
+                    // Simple collision response
+                    ball.dy = -ball.dy;
+                    
+                    // Check win condition
+                    if (blocks.every(block => block.destroyed)) {
+                        gameWin();
+                    }
+                    
+                    break;
+                }
+            }
+        }
+
+        function resetBall() {
+            ball.x = canvas.width / 2;
+            ball.y = paddle.y - 20;
+            ball.dx = 0;
+            ball.dy = 0;
+            ball.launched = false;
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            alert(`Game Over! Final Score: ${score}`);
+        }
+
+        function gameWin() {
+            gameRunning = false;
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            alert(`You Win! Final Score: ${score}`);
+        }
+
+        function updateUI() {
+            scoreElement.textContent = score;
+            livesElement.textContent = lives;
+        }
+
+        function draw() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw paddle
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+            
+            // Draw ball
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+            ctx.closePath();
+            
+            // Draw blocks
+            for (let block of blocks) {
+                if (!block.destroyed) {
+                    ctx.fillStyle = block.color;
+                    ctx.fillRect(block.x, block.y, block.width, block.height);
+                    
+                    // Add border
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(block.x, block.y, block.width, block.height);
+                }
+            }
+        }
+
+        function gameLoop() {
+            if (!gameRunning || gamePaused) return;
+            
+            updatePaddle();
+            updateBall();
+            checkBlockCollisions();
+            draw();
+            
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        // Initialize game
+        initBlocks();
+        draw();
+        updateUI();
+    </script>
+</body>
+</html>
