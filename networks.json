@@ -1,0 +1,25 @@
+{
+  "networks": {
+    "example_network": {
+      "name": "Example Network",
+      "host": "irc.example.net",
+      "port": 6697,
+      "use_ssl": true,
+      "command_prefix": "!",
+      "nickname": "PyBorg",
+      "realname": "PyBorg IRC Bot",
+      "channels": ["#general"],
+      "reconnect_delay": 30,
+      "auth_join_delay": 5
+    }
+  },
+  "default_settings": {
+    "rate_limit_messages": 6,
+    "rate_limit_period": 30,
+    "max_message_length": 400,
+    "command_cooldown": 2,
+    "ai_context_limit": 10,
+    "database_backup_interval": 86400,
+    "log_level": "INFO"
+  }
+}

@@ -1,0 +1,353 @@
+{
+  "version": "1.0.0",
+  "levelNumber": 6,
+  "name": "Neon Spiral",
+  "description": "Simple neon colored rectangular pattern",
+  "blocks": [
+    {
+      "col": 2,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF00FF"
+    },
+    {
+      "col": 3,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FFFF"
+    },
+    {
+      "col": 4,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF00AA"
+    },
+    {
+      "col": 5,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FF00"
+    },
+    {
+      "col": 6,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FFFF00"
+    },
+    {
+      "col": 7,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF0099"
+    },
+    {
+      "col": 8,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FFAA"
+    },
+    {
+      "col": 9,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF00FF"
+    },
+    {
+      "col": 10,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FFFF"
+    },
+    {
+      "col": 11,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF00AA"
+    },
+    {
+      "col": 12,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FF00"
+    },
+    {
+      "col": 13,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FFFF00"
+    },
+    {
+      "col": 14,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF0099"
+    },
+    {
+      "col": 15,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FFAA"
+    },
+    {
+      "col": 16,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF00FF"
+    },
+    {
+      "col": 17,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FFFF"
+    },
+    {
+      "col": 2,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF00AA"
+    },
+    {
+      "col": 3,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FF00"
+    },
+    {
+      "col": 4,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FFFF00"
+    },
+    {
+      "col": 5,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF0099"
+    },
+    {
+      "col": 6,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FFAA"
+    },
+    {
+      "col": 7,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF00FF"
+    },
+    {
+      "col": 8,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FFFF"
+    },
+    {
+      "col": 9,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF00AA"
+    },
+    {
+      "col": 10,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FF00"
+    },
+    {
+      "col": 11,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FFFF00"
+    },
+    {
+      "col": 12,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF0099"
+    },
+    {
+      "col": 13,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FFAA"
+    },
+    {
+      "col": 14,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF00FF"
+    },
+    {
+      "col": 15,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FFFF"
+    },
+    {
+      "col": 16,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF00AA"
+    },
+    {
+      "col": 17,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FF00"
+    },
+    {
+      "col": 2,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FFFF00"
+    },
+    {
+      "col": 3,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF0099"
+    },
+    {
+      "col": 4,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FFAA"
+    },
+    {
+      "col": 5,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF00FF"
+    },
+    {
+      "col": 6,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FFFF"
+    },
+    {
+      "col": 7,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF00AA"
+    },
+    {
+      "col": 8,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FF00"
+    },
+    {
+      "col": 9,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FFFF00"
+    },
+    {
+      "col": 10,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF0099"
+    },
+    {
+      "col": 11,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FFAA"
+    },
+    {
+      "col": 12,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF00FF"
+    },
+    {
+      "col": 13,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FFFF"
+    },
+    {
+      "col": 14,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF00AA"
+    },
+    {
+      "col": 15,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#00FF00"
+    },
+    {
+      "col": 16,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FFFF00"
+    },
+    {
+      "col": 17,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF0099"
+    }
+  ],
+  "metadata": {
+    "difficulty": "medium",
+    "estimatedTime": "40s",
+    "specialBlocks": [],
+    "colorThemes": [
+      "neon"
+    ],
+    "blockCount": 48
+  }
+}

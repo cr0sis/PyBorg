@@ -1,0 +1,37 @@
+{
+  "networks": {
+    "example_network1": {
+      "name": "Example Network 1",
+      "host": "irc.example1.net",
+      "port": 6697,
+      "use_ssl": true,
+      "command_prefix": "!",
+      "nickname": "YourBotName",
+      "realname": "Your Bot Real Name",
+      "channels": ["#channel1", "#channel2"],
+      "reconnect_delay": 30,
+      "auth_join_delay": 5
+    },
+    "example_network2": {
+      "name": "Example Network 2", 
+      "host": "irc.example2.org",
+      "port": 6667,
+      "use_ssl": false,
+      "command_prefix": "~",
+      "nickname": "YourBotName",
+      "realname": "Your Bot Real Name", 
+      "channels": ["#main", "#bots"],
+      "reconnect_delay": 60,
+      "auth_join_delay": 10
+    }
+  },
+  "default_settings": {
+    "rate_limit_messages": 6,
+    "rate_limit_period": 30,
+    "max_message_length": 400,
+    "command_cooldown": 2,
+    "ai_context_limit": 10,
+    "database_backup_interval": 86400,
+    "log_level": "INFO"
+  }
+}

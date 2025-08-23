@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level Manager Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .stats { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px; margin: 10px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Level Manager Integration Test</h1>
+    
+    <div id="test-results"></div>
+    
+    <div class="controls">
+        <button onclick="testLevelManager()">Test Level Manager</button>
+        <button onclick="testAllLevels()">Test All Levels (1-10)</button>
+        <button onclick="testPerformance()">Performance Test</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+    
+    <div id="performance-stats"></div>
+    
+    <script src="js/modules/levels/LevelManager.js"></script>
+    <script>
+        let testResults = [];
+        
+        function addResult(type, message, details = null) {
+            const timestamp = new Date().toLocaleTimeString();
+            testResults.push({ type, message, details, timestamp });
+            updateDisplay();
+        }
+        
+        function updateDisplay() {
+            const container = document.getElementById('test-results');
+            container.innerHTML = testResults.map(result => {
+                const detailsHtml = result.details ? `<pre>${JSON.stringify(result.details, null, 2)}</pre>` : '';
+                return `
+                    <div class="test-result ${result.type}">
+                        <strong>[${result.timestamp}]</strong> ${result.message}
+                        ${detailsHtml}
+                    </div>
+                `;
+            }).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function clearResults() {
+            testResults = [];
+            updateDisplay();
+            document.getElementById('performance-stats').innerHTML = '';
+        }
+        
+        async function testLevelManager() {
+            addResult('info', 'Starting Level Manager tests...');
+            
+            try {
+                // Test initialization
+                const levelManager = new LevelManager({
+                    useExternalLevels: true,
+                    basePath: '/js/modules/levels/data/',
+                    maxCacheSize: 10,
+                    loadTimeoutMs: 5000
+                });
+                
+                addResult('success', 'Level Manager initialized successfully');
+                
+                // Test loading level 1
+                const startTime = performance.now();
+                const level1 = await levelManager.loadLevel(1);
+                const loadTime = performance.now() - startTime;
+                
+                if (level1 && level1.blocks) {
+                    addResult('success', `Level 1 loaded successfully in ${loadTime.toFixed(2)}ms`, {
+                        name: level1.name,
+                        description: level1.description,
+                        blockCount: level1.blocks.length,
+                        version: level1.version
+                    });
+                    
+                    // Test block conversion
+                    const gameConstants = { blockWidth: 47, blockHeight: 25, blockPadding: 3 };
+                    const gameBlocks = levelManager.convertBlocksToGameFormat(level1.blocks, gameConstants);
+                    
+                    addResult('success', `Block conversion successful`, {
+                        originalBlocks: level1.blocks.length,
+                        convertedBlocks: gameBlocks.length,
+                        sampleBlock: gameBlocks[0]
+                    });
+                    
+                } else {
+                    addResult('error', 'Level 1 loading failed - no blocks returned');
+                }
+                
+                // Test performance stats
+                const stats = levelManager.getPerformanceStats();
+                addResult('info', 'Performance statistics', stats);
+                
+            } catch (error) {
+                addResult('error', `Level Manager test failed: ${error.message}`, { stack: error.stack });
+            }
+        }
+        
+        async function testAllLevels() {
+            addResult('info', 'Testing all levels 1-10...');
+            
+            const levelManager = new LevelManager({
+                useExternalLevels: true,
+                basePath: '/js/modules/levels/data/',
+                maxCacheSize: 20,
+                loadTimeoutMs: 5000
+            });
+            
+            const results = [];
+            let totalTime = 0;
+            
+            for (let level = 1; level <= 10; level++) {
+                try {
+                    const startTime = performance.now();
+                    const levelData = await levelManager.loadLevel(level);
+                    const loadTime = performance.now() - startTime;
+                    totalTime += loadTime;
+                    
+                    if (levelData && levelData.blocks) {
+                        results.push({
+                            level,
+                            success: true,
+                            loadTime: loadTime.toFixed(2),
+                            blockCount: levelData.blocks.length,
+                            name: levelData.name
+                        });
+                        addResult('success', `Level ${level}: ${levelData.name} (${levelData.blocks.length} blocks, ${loadTime.toFixed(2)}ms)`);
+                    } else {
+                        results.push({ level, success: false, error: 'No blocks returned' });
+                        addResult('error', `Level ${level}: Failed - no blocks returned`);
+                    }
+                } catch (error) {
+                    results.push({ level, success: false, error: error.message });
+                    addResult('error', `Level ${level}: Failed - ${error.message}`);
+                }
+            }
+            
+            const successful = results.filter(r => r.success).length;
+            const avgTime = totalTime / results.length;
+            
+            addResult('info', `All levels test complete: ${successful}/10 successful, average load time: ${avgTime.toFixed(2)}ms`);
+            
+            // Performance stats
+            const stats = levelManager.getPerformanceStats();
+            document.getElementById('performance-stats').innerHTML = `
+                <div class="stats">
+                    <h3>Performance Statistics</h3>
+                    <p><strong>Total Loads:</strong> ${stats.totalLoads}</p>
+                    <p><strong>Cache Hits:</strong> ${stats.cacheHits}</p>
+                    <p><strong>Cache Hit Rate:</strong> ${stats.cacheHitRate}</p>
+                    <p><strong>Average Load Time:</strong> ${stats.averageLoadTime}</p>
+                    <p><strong>Max Load Time:</strong> ${stats.maxLoadTime}</p>
+                    <p><strong>Cache Size:</strong> ${stats.cacheSize}</p>
+                    <p><strong>Errors:</strong> ${stats.errors}</p>
+                </div>
+            `;
+        }
+        
+        async function testPerformance() {
+            addResult('info', 'Running performance test (10 iterations of level 1)...');
+            
+            const levelManager = new LevelManager({
+                useExternalLevels: true,
+                basePath: '/js/modules/levels/data/',
+                maxCacheSize: 20,
+                loadTimeoutMs: 5000
+            });
+            
+            const times = [];
+            
+            for (let i = 0; i < 10; i++) {
+                try {
+                    const startTime = performance.now();
+                    await levelManager.loadLevel(1);
+                    const loadTime = performance.now() - startTime;
+                    times.push(loadTime);
+                } catch (error) {
+                    addResult('error', `Performance test iteration ${i + 1} failed: ${error.message}`);
+                    return;
+                }
+            }
+            
+            const avgTime = times.reduce((a, b) => a + b, 0) / times.length;
+            const minTime = Math.min(...times);
+            const maxTime = Math.max(...times);
+            
+            addResult('success', `Performance test complete`, {
+                iterations: 10,
+                averageTime: avgTime.toFixed(2) + 'ms',
+                minTime: minTime.toFixed(2) + 'ms',
+                maxTime: maxTime.toFixed(2) + 'ms',
+                under50ms: times.filter(t => t < 50).length + '/10',
+                allTimes: times.map(t => t.toFixed(2) + 'ms')
+            });
+            
+            if (avgTime < 50) {
+                addResult('success', '✅ Performance target met: Average load time under 50ms');
+            } else {
+                addResult('error', '❌ Performance target missed: Average load time over 50ms');
+            }
+        }
+        
+        // Auto-run basic test on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            addResult('info', 'Level Manager test page loaded. Click buttons to run tests.');
+        });
+    </script>
+</body>
+</html>

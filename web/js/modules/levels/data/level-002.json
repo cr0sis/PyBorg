@@ -1,0 +1,437 @@
+{
+  "version": "1.0.0",
+  "levelNumber": 2,
+  "name": "Ocean Waves",
+  "description": "Gentle wave patterns with ocean colors",
+  "blocks": [
+    {
+      "col": 0,
+      "row": 3,
+      "hits": 1,
+      "type": "normal",
+      "color": "#003A70"
+    },
+    {
+      "col": 0,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#001F3F"
+    },
+    {
+      "col": 0,
+      "row": 5,
+      "hits": 1,
+      "type": "normal",
+      "color": "#003A70"
+    },
+    {
+      "col": 1,
+      "row": 3,
+      "hits": 1,
+      "type": "normal",
+      "color": "#003A70"
+    },
+    {
+      "col": 1,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#001F3F"
+    },
+    {
+      "col": 1,
+      "row": 5,
+      "hits": 1,
+      "type": "normal",
+      "color": "#001F3F"
+    },
+    {
+      "col": 2,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#003A70"
+    },
+    {
+      "col": 2,
+      "row": 5,
+      "hits": 1,
+      "type": "normal",
+      "color": "#001F3F"
+    },
+    {
+      "col": 2,
+      "row": 6,
+      "hits": 1,
+      "type": "normal",
+      "color": "#003A70"
+    },
+    {
+      "col": 3,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#0074D9"
+    },
+    {
+      "col": 3,
+      "row": 5,
+      "hits": 1,
+      "type": "normal",
+      "color": "#003A70"
+    },
+    {
+      "col": 3,
+      "row": 6,
+      "hits": 1,
+      "type": "normal",
+      "color": "#003A70"
+    },
+    {
+      "col": 4,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#0074D9"
+    },
+    {
+      "col": 4,
+      "row": 5,
+      "hits": 1,
+      "type": "normal",
+      "color": "#003A70"
+    },
+    {
+      "col": 4,
+      "row": 6,
+      "hits": 1,
+      "type": "normal",
+      "color": "#003A70"
+    },
+    {
+      "col": 5,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#39CCCC"
+    },
+    {
+      "col": 5,
+      "row": 5,
+      "hits": 1,
+      "type": "normal",
+      "color": "#0074D9"
+    },
+    {
+      "col": 5,
+      "row": 6,
+      "hits": 1,
+      "type": "normal",
+      "color": "#0074D9"
+    },
+    {
+      "col": 6,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#39CCCC"
+    },
+    {
+      "col": 6,
+      "row": 5,
+      "hits": 1,
+      "type": "normal",
+      "color": "#0074D9"
+    },
+    {
+      "col": 6,
+      "row": 6,
+      "hits": 1,
+      "type": "normal",
+      "color": "#0074D9"
+    },
+    {
+      "col": 7,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#39CCCC"
+    },
+    {
+      "col": 7,
+      "row": 5,
+      "hits": 1,
+      "type": "normal",
+      "color": "#0074D9"
+    },
+    {
+      "col": 7,
+      "row": 6,
+      "hits": 1,
+      "type": "normal",
+      "color": "#39CCCC"
+    },
+    {
+      "col": 8,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#39CCCC"
+    },
+    {
+      "col": 8,
+      "row": 5,
+      "hits": 1,
+      "type": "normal",
+      "color": "#0074D9"
+    },
+    {
+      "col": 8,
+      "row": 6,
+      "hits": 1,
+      "type": "normal",
+      "color": "#39CCCC"
+    },
+    {
+      "col": 9,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#39CCCC"
+    },
+    {
+      "col": 9,
+      "row": 5,
+      "hits": 1,
+      "type": "normal",
+      "color": "#39CCCC"
+    },
+    {
+      "col": 9,
+      "row": 6,
+      "hits": 1,
+      "type": "normal",
+      "color": "#7FDBFF"
+    },
+    {
+      "col": 10,
+      "row": 3,
+      "hits": 1,
+      "type": "normal",
+      "color": "#7FDBFF"
+    },
+    {
+      "col": 10,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#39CCCC"
+    },
+    {
+      "col": 10,
+      "row": 5,
+      "hits": 1,
+      "type": "normal",
+      "color": "#7FDBFF"
+    },
+    {
+      "col": 11,
+      "row": 3,
+      "hits": 1,
+      "type": "normal",
+      "color": "#7FDBFF"
+    },
+    {
+      "col": 11,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#39CCCC"
+    },
+    {
+      "col": 11,
+      "row": 5,
+      "hits": 1,
+      "type": "normal",
+      "color": "#7FDBFF"
+    },
+    {
+      "col": 12,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#85DCB0"
+    },
+    {
+      "col": 12,
+      "row": 3,
+      "hits": 1,
+      "type": "normal",
+      "color": "#7FDBFF"
+    },
+    {
+      "col": 12,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#7FDBFF"
+    },
+    {
+      "col": 13,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#85DCB0"
+    },
+    {
+      "col": 13,
+      "row": 3,
+      "hits": 1,
+      "type": "normal",
+      "color": "#7FDBFF"
+    },
+    {
+      "col": 13,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#85DCB0"
+    },
+    {
+      "col": 14,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#85DCB0"
+    },
+    {
+      "col": 14,
+      "row": 3,
+      "hits": 1,
+      "type": "normal",
+      "color": "#7FDBFF"
+    },
+    {
+      "col": 14,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#85DCB0"
+    },
+    {
+      "col": 15,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#85DCB0"
+    },
+    {
+      "col": 15,
+      "row": 3,
+      "hits": 1,
+      "type": "normal",
+      "color": "#85DCB0"
+    },
+    {
+      "col": 15,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#B3E5FC"
+    },
+    {
+      "col": 16,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#85DCB0"
+    },
+    {
+      "col": 16,
+      "row": 3,
+      "hits": 1,
+      "type": "normal",
+      "color": "#85DCB0"
+    },
+    {
+      "col": 16,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#B3E5FC"
+    },
+    {
+      "col": 17,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#B3E5FC"
+    },
+    {
+      "col": 17,
+      "row": 3,
+      "hits": 1,
+      "type": "normal",
+      "color": "#B3E5FC"
+    },
+    {
+      "col": 17,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#001F3F"
+    },
+    {
+      "col": 18,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#B3E5FC"
+    },
+    {
+      "col": 18,
+      "row": 3,
+      "hits": 1,
+      "type": "normal",
+      "color": "#B3E5FC"
+    },
+    {
+      "col": 18,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#001F3F"
+    },
+    {
+      "col": 19,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#001F3F"
+    },
+    {
+      "col": 19,
+      "row": 3,
+      "hits": 1,
+      "type": "normal",
+      "color": "#B3E5FC"
+    },
+    {
+      "col": 19,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#001F3F"
+    }
+  ],
+  "metadata": {
+    "difficulty": "easy",
+    "estimatedTime": "45s",
+    "specialBlocks": [],
+    "colorThemes": [
+      "ocean"
+    ],
+    "blockCount": 60
+  }
+}

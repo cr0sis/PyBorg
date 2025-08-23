@@ -1,0 +1,129 @@
+{
+  "version": "1.0.0",
+  "levelNumber": 4,
+  "name": "Sunset Diamond",
+  "description": "Diamond outline in sunset colors",
+  "blocks": [
+    {
+      "col": 8,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF6B35"
+    },
+    {
+      "col": 11,
+      "row": 0,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF6B35"
+    },
+    {
+      "col": 6,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#F7931E"
+    },
+    {
+      "col": 13,
+      "row": 1,
+      "hits": 1,
+      "type": "normal",
+      "color": "#F7931E"
+    },
+    {
+      "col": 4,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FCEE21"
+    },
+    {
+      "col": 15,
+      "row": 2,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FCEE21"
+    },
+    {
+      "col": 2,
+      "row": 3,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF9F1C"
+    },
+    {
+      "col": 17,
+      "row": 3,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF9F1C"
+    },
+    {
+      "col": 0,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF4E50"
+    },
+    {
+      "col": 19,
+      "row": 4,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF4E50"
+    },
+    {
+      "col": 2,
+      "row": 5,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FC913A"
+    },
+    {
+      "col": 17,
+      "row": 5,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FC913A"
+    },
+    {
+      "col": 4,
+      "row": 6,
+      "hits": 1,
+      "type": "normal",
+      "color": "#F9D423"
+    },
+    {
+      "col": 15,
+      "row": 6,
+      "hits": 1,
+      "type": "normal",
+      "color": "#F9D423"
+    },
+    {
+      "col": 6,
+      "row": 7,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF6B35"
+    },
+    {
+      "col": 13,
+      "row": 7,
+      "hits": 1,
+      "type": "normal",
+      "color": "#FF6B35"
+    }
+  ],
+  "metadata": {
+    "difficulty": "medium",
+    "estimatedTime": "45s",
+    "specialBlocks": [],
+    "colorThemes": [
+      "sunset"
+    ],
+    "blockCount": 16
+  }
+}

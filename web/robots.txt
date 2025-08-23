@@ -1,0 +1,45 @@
+User-agent: *
+Allow: /
+Allow: /breakout.html
+Allow: /privacy.html
+Allow: /api/bot_status_public.php
+Allow: /breakout_scores.php
+Allow: /js/*
+Allow: /favicon.ico
+
+# Block admin and sensitive areas
+Disallow: /admin*
+Disallow: /auth.php
+Disallow: /data/
+Disallow: /quarantine/
+Disallow: /uploads/
+Disallow: /sso/
+Disallow: /tests/
+Disallow: /*.log$
+Disallow: /*.db$
+Disallow: /*.env$
+Disallow: /*_backup*
+Disallow: /*debug*
+Disallow: /*test*
+
+# Allow major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# Sitemap location
+Sitemap: https://cr0s.is/sitemap.xml
+
+# Crawl delay for politeness
+Crawl-delay: 1

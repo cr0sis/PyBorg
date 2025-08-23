@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Dashboard - CR0 Bot System</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #00ff00;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 10px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .stat-card {
+            background: rgba(0, 20, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-card h3 {
+            color: #66ff66;
+            margin-top: 0;
+        }
+        .stat-number {
+            font-size: 2.5em;
+            color: #00ff00;
+            font-weight: bold;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        .alert-high { color: #ff6666; }
+        .alert-medium { color: #ffaa66; }
+        .alert-low { color: #66ff66; }
+        
+        .section {
+            background: rgba(0, 20, 0, 0.9);
+            border: 2px solid #00aa00;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .section h2 {
+            color: #66ff66;
+            margin-top: 0;
+            border-bottom: 1px solid #00aa00;
+            padding-bottom: 10px;
+        }
+        
+        .log-entry {
+            background: rgba(0, 10, 0, 0.5);
+            border-left: 3px solid #00ff00;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+        .log-entry.critical {
+            border-left-color: #ff0000;
+            background: rgba(20, 0, 0, 0.5);
+        }
+        .log-entry.high {
+            border-left-color: #ff6600;
+            background: rgba(20, 10, 0, 0.5);
+        }
+        
+        .session-item {
+            background: rgba(0, 10, 10, 0.5);
+            border: 1px solid #0066aa;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .session-admin {
+            border-color: #ff6600;
+            background: rgba(20, 10, 0, 0.3);
+        }
+        
+        .control-buttons {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .btn {
+            background: #00aa00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: inherit;
+        }
+        .btn:hover {
+            background: #00ff00;
+        }
+        .btn-danger {
+            background: #aa0000;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #ff0000;
+        }
+        
+        .timestamp {
+            color: #888;
+            font-size: 0.8em;
+        }
+        .username {
+            color: #66aaff;
+            font-weight: bold;
+        }
+        .ip-address {
+            color: #ffaa66;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h1>🛡️ SECURITY DASHBOARD</h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Active Sessions</h3>
+                <div class="stat-number" id="active-sessions">-</div>
+                <div>Admin: <span id="admin-sessions">-</span></div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Security Events (24h)</h3>
+                <div class="stat-number" id="security-events">-</div>
+                <div class="alert-high">Critical: <span id="critical-events">-</span></div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Admin Actions (Today)</h3>
+                <div class="stat-number" id="admin-actions">-</div>
+                <div>High Risk: <span id="high-risk-actions">-</span></div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Failed Login Attempts</h3>
+                <div class="stat-number alert-high" id="failed-logins">-</div>
+                <div>2FA Failures: <span id="twofa-failures">-</span></div>
+            </div>
+        </div>
+        
+        <div class="control-buttons">
+            <button class="btn" onclick="refreshData()">🔄 Refresh Data</button>
+            <button class="btn" onclick="exportLogs()">📁 Export Logs</button>
+            <button class="btn btn-danger" onclick="emergencyLockdown()">🚨 Emergency Lockdown</button>
+        </div>
+        
+        <div class="section">
+            <h2>🔐 Active Admin Sessions</h2>
+            <div id="admin-sessions-list">Loading...</div>
+        </div>
+        
+        <div class="section">
+            <h2>⚠️ Recent Security Events</h2>
+            <div id="security-events-list">Loading...</div>
+        </div>
+        
+        <div class="section">
+            <h2>📋 Admin Action Log</h2>
+            <div id="admin-actions-list">Loading...</div>
+        </div>
+        
+        <div class="section">
+            <h2>🎯 Game Security Monitoring</h2>
+            <div id="game-security-list">Loading...</div>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-refresh data every 30 seconds
+        let refreshInterval;
+        
+        function refreshData() {
+            loadSessionStats();
+            loadSecurityEvents();
+            loadAdminActions();
+            loadGameSecurity();
+        }
+        
+        function loadSessionStats() {
+            // This would connect to your PHP backend
+            fetch('/api/security_stats.php')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('active-sessions').textContent = data.active_sessions || 0;
+                    document.getElementById('admin-sessions').textContent = data.admin_sessions || 0;
+                    document.getElementById('security-events').textContent = data.security_events_24h || 0;
+                    document.getElementById('critical-events').textContent = data.critical_events || 0;
+                    document.getElementById('admin-actions').textContent = data.admin_actions_today || 0;
+                    document.getElementById('high-risk-actions').textContent = data.high_risk_actions || 0;
+                    document.getElementById('failed-logins').textContent = data.failed_logins || 0;
+                    document.getElementById('twofa-failures').textContent = data.twofa_failures || 0;
+                })
+                .catch(error => console.error('Error loading stats:', error));
+        }
+        
+        function loadSecurityEvents() {
+            fetch('/api/security_events.php')
+                .then(response => response.json())
+                .then(events => {
+                    const container = document.getElementById('security-events-list');
+                    container.innerHTML = '';
+                    
+                    if (events.length === 0) {
+                        container.innerHTML = '<p style="color: #666;">No recent security events</p>';
+                        return;
+                    }
+                    
+                    events.slice(0, 10).forEach(event => {
+                        const div = document.createElement('div');
+                        div.className = `log-entry ${event.severity.toLowerCase()}`;
+                        div.innerHTML = `
+                            <div><strong>${event.event_type}</strong>: ${event.message}</div>
+                            <div class="timestamp">${event.timestamp} | IP: <span class="ip-address">${event.ip_address}</span></div>
+                        `;
+                        container.appendChild(div);
+                    });
+                })
+                .catch(error => console.error('Error loading security events:', error));
+        }
+        
+        function loadAdminActions() {
+            fetch('/api/admin_actions.php')
+                .then(response => response.json())
+                .then(actions => {
+                    const container = document.getElementById('admin-actions-list');
+                    container.innerHTML = '';
+                    
+                    if (actions.length === 0) {
+                        container.innerHTML = '<p style="color: #666;">No recent admin actions</p>';
+                        return;
+                    }
+                    
+                    actions.slice(0, 15).forEach(action => {
+                        const div = document.createElement('div');
+                        div.className = 'log-entry';
+                        div.innerHTML = `
+                            <div><strong>${action.action}</strong>: ${action.details}</div>
+                            <div class="timestamp">${action.timestamp} | <span class="username">${action.username}</span> | IP: <span class="ip-address">${action.ip_address}</span></div>
+                        `;
+                        container.appendChild(div);
+                    });
+                })
+                .catch(error => console.error('Error loading admin actions:', error));
+        }
+        
+        function loadGameSecurity() {
+            fetch('/api/game_security.php')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('game-security-list');
+                    container.innerHTML = '';
+                    
+                    if (data.suspicious_sessions && data.suspicious_sessions.length > 0) {
+                        data.suspicious_sessions.forEach(session => {
+                            const div = document.createElement('div');
+                            div.className = 'log-entry high';
+                            div.innerHTML = `
+                                <div><strong>Suspicious Game Session</strong>: ${session.player_name} | Score: ${session.score}</div>
+                                <div class="timestamp">Level ${session.level} | IP: <span class="ip-address">${session.ip_address}</span></div>
+                            `;
+                            container.appendChild(div);
+                        });
+                    } else {
+                        container.innerHTML = '<p style="color: #666;">No suspicious game activity detected</p>';
+                    }
+                })
+                .catch(error => console.error('Error loading game security:', error));
+        }
+        
+        function exportLogs() {
+            window.open('/api/export_logs.php', '_blank');
+        }
+        
+        function emergencyLockdown() {
+            if (confirm('⚠️ This will terminate ALL admin sessions and require re-authentication. Continue?')) {
+                fetch('/emergency_lockdown.php', { method: 'POST' })
+                    .then(response => response.text())
+                    .then(result => {
+                        alert('Emergency lockdown activated. All sessions terminated.');
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        console.error('Lockdown error:', error);
+                        alert('Lockdown failed. Check console for details.');
+                    });
+            }
+        }
+        
+        // Initial load
+        refreshData();
+        
+        // Auto-refresh every 30 seconds
+        refreshInterval = setInterval(refreshData, 30000);
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>

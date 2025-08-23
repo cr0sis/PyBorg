@@ -1,0 +1,1256 @@
+/**
+ * Terminal.css - Aggressive Hacker/Terminal Aesthetic Theme
+ * Advanced terminal interface with matrix effects, scanlines, and cyberpunk aesthetics
+ */
+
+/* Terminal Font Stack - Using System Fonts for Security */
+
+/* Terminal Color Palette */
+:root {
+    /* Core Terminal Colors */
+    --terminal-bg: #000000;
+    --terminal-bg-secondary: #050505;
+    --terminal-bg-tertiary: #0a0a0a;
+    --terminal-bg-overlay: rgba(0, 0, 0, 0.98);
+    
+    /* Matrix Green Family */
+    --matrix-green: #00ff00;
+    --matrix-green-bright: #00ff41;
+    --matrix-green-dim: #00cc00;
+    --matrix-green-dark: #008800;
+    --matrix-green-glow: rgba(0, 255, 0, 0.8);
+    --matrix-green-shadow: rgba(0, 255, 0, 0.3);
+    
+    /* Cyber Colors */
+    --cyber-cyan: #00ffff;
+    --cyber-cyan-bright: #40ffff;
+    --cyber-cyan-glow: rgba(0, 255, 255, 0.8);
+    --cyber-red: #ff0040;
+    --cyber-red-bright: #ff4080;
+    --cyber-red-glow: rgba(255, 0, 64, 0.8);
+    --cyber-purple: #8000ff;
+    --cyber-orange: #ff8000;
+    --cyber-yellow: #ffff00;
+    
+    /* Terminal Text */
+    --terminal-text: #00ff00;
+    --terminal-text-bright: #40ff40;
+    --terminal-text-dim: #80ff80;
+    --terminal-text-muted: #006600;
+    --terminal-text-error: #ff4040;
+    --terminal-text-warning: #ffff00;
+    --terminal-text-info: #40ffff;
+    
+    /* Effects */
+    --scanline-color: rgba(0, 255, 0, 0.05);
+    --phosphor-glow: 0 0 8px var(--matrix-green-glow), 0 0 12px var(--matrix-green-glow);
+    --text-glow: 0 0 3px currentColor, 0 0 6px currentColor;
+    --strong-glow: 0 0 8px currentColor, 0 0 16px currentColor, 0 0 24px currentColor;
+    
+    /* Typography */
+    --font-terminal: 'Consolas', 'Monaco', 'Courier New', 'Liberation Mono', 'Menlo', monospace;
+    --font-size-terminal: 14px;
+    --line-height-terminal: 1.4;
+    --letter-spacing-terminal: 0.5px;
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-xxl: 3rem;
+    
+    /* Animation Durations */
+    --anim-fast: 0.15s;
+    --anim-normal: 0.3s;
+    --anim-slow: 0.5s;
+}
+
+/* Global Terminal Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Terminal Body Base */
+body.terminal-theme {
+    font-family: var(--font-terminal) !important;
+    font-size: var(--font-size-terminal) !important;
+    line-height: var(--line-height-terminal) !important;
+    letter-spacing: var(--letter-spacing-terminal) !important;
+    background: var(--terminal-bg) !important;
+    color: var(--terminal-text) !important;
+    overflow-x: hidden;
+    position: relative;
+    cursor: crosshair !important;
+    
+    /* Aggressive terminal filter */
+    filter: brightness(0.9) contrast(1.2) saturate(1.3) !important;
+    
+    /* Enhanced terminal glow effect */
+    text-shadow: var(--text-glow) !important;
+    
+    /* Debug: Very obvious terminal indicator */
+    border: 5px solid var(--matrix-green) !important;
+    box-shadow: inset 0 0 50px var(--matrix-green-shadow) !important;
+    
+    /* Prevent text selection highlighting interference */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scanline Overlay Effect */
+body.terminal-theme::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        var(--scanline-color) 2px,
+        var(--scanline-color) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+    animation: scanlines 0.1s linear infinite;
+}
+
+/* Matrix Rain Effect Background */
+body.terminal-theme::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at center, transparent 0%, rgba(0, 20, 0, 0.2) 100%),
+        linear-gradient(90deg, transparent 0%, rgba(0, 255, 0, 0.02) 50%, transparent 100%);
+    pointer-events: none;
+    z-index: -1;
+    animation: matrix-bg 20s ease-in-out infinite alternate;
+}
+
+/* Terminal Content Container */
+.terminal-container {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    background: linear-gradient(135deg, 
+        rgba(0, 20, 0, 0.1) 0%,
+        transparent 50%,
+        rgba(0, 40, 0, 0.1) 100%);
+}
+
+/* Terminal Header Styles */
+.terminal-header {
+    background: linear-gradient(180deg, var(--terminal-bg) 0%, var(--terminal-bg-secondary) 100%);
+    border-bottom: 2px solid var(--matrix-green);
+    padding: var(--spacing-lg) 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.terminal-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--matrix-green-shadow), transparent);
+    animation: terminal-sweep 3s ease-in-out infinite;
+}
+
+/* Terminal Logo/Brand */
+.terminal-brand {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--matrix-green-bright);
+    text-shadow: var(--strong-glow);
+    text-align: center;
+    margin-bottom: var(--spacing-md);
+    position: relative;
+    animation: logo-pulse 2s ease-in-out infinite alternate;
+}
+
+.terminal-brand::before {
+    content: '> ';
+    color: var(--cyber-cyan);
+    animation: cursor-blink 1s infinite;
+}
+
+.terminal-brand::after {
+    content: ' <';
+    color: var(--cyber-cyan);
+}
+
+/* Terminal Navigation */
+.terminal-nav {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-md) 0;
+    border-bottom: 1px solid var(--matrix-green-dark);
+}
+
+.terminal-nav-item {
+    background: transparent;
+    border: 1px solid var(--matrix-green-dark);
+    color: var(--terminal-text);
+    padding: var(--spacing-sm) var(--spacing-md);
+    text-decoration: none;
+    font-family: var(--font-terminal);
+    font-size: var(--font-size-terminal);
+    transition: all var(--anim-normal) ease;
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.terminal-nav-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--matrix-green-glow), transparent);
+    transition: left var(--anim-normal) ease;
+}
+
+.terminal-nav-item:hover {
+    border-color: var(--matrix-green);
+    color: var(--matrix-green-bright);
+    text-shadow: var(--text-glow);
+    box-shadow: 0 0 15px var(--matrix-green-shadow);
+    transform: translateY(-2px);
+}
+
+.terminal-nav-item:hover::before {
+    left: 100%;
+}
+
+.terminal-nav-item.active {
+    background: var(--terminal-bg-tertiary);
+    border-color: var(--matrix-green-bright);
+    color: var(--matrix-green-bright);
+    text-shadow: var(--text-glow);
+}
+
+/* Terminal Content Sections */
+.terminal-section {
+    padding: var(--spacing-xl) var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    border: 1px solid var(--matrix-green-dark);
+    background: linear-gradient(135deg, 
+        rgba(0, 255, 0, 0.02) 0%,
+        transparent 50%,
+        rgba(0, 255, 0, 0.01) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.terminal-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, 
+        var(--cyber-cyan) 0%,
+        var(--matrix-green) 50%,
+        var(--cyber-red) 100%);
+    animation: border-flow 2s linear infinite;
+}
+
+/* Terminal Card Styles */
+.terminal-card {
+    background: var(--terminal-bg-secondary);
+    border: 1px solid var(--matrix-green-dark);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    position: relative;
+    transition: all var(--anim-normal) ease;
+    overflow: hidden;
+}
+
+.terminal-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--matrix-green), var(--cyber-cyan), var(--matrix-green));
+    z-index: -1;
+    opacity: 0;
+    transition: opacity var(--anim-normal) ease;
+}
+
+.terminal-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px var(--matrix-green-shadow);
+}
+
+.terminal-card:hover::before {
+    opacity: 1;
+    animation: border-glow 2s linear infinite;
+}
+
+/* Terminal Typography */
+.terminal-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--matrix-green-bright);
+    margin-bottom: var(--spacing-md);
+    text-shadow: var(--text-glow);
+    position: relative;
+}
+
+.terminal-title::before {
+    content: '# ';
+    color: var(--cyber-cyan);
+}
+
+.terminal-subtitle {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--terminal-text-bright);
+    margin-bottom: var(--spacing-sm);
+    text-shadow: var(--text-glow);
+}
+
+.terminal-subtitle::before {
+    content: '## ';
+    color: var(--cyber-orange);
+}
+
+.terminal-text {
+    color: var(--terminal-text-dim);
+    line-height: 1.6;
+    margin-bottom: var(--spacing-md);
+}
+
+.terminal-code {
+    background: var(--terminal-bg-tertiary);
+    border: 1px solid var(--matrix-green-dark);
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+    font-family: var(--font-terminal);
+    color: var(--matrix-green);
+    position: relative;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+
+.terminal-code::before {
+    content: 'user@system:~$ ';
+    color: var(--cyber-cyan);
+    font-weight: 600;
+}
+
+/* Terminal Buttons */
+.terminal-btn {
+    display: inline-block;
+    background: transparent;
+    border: 2px solid var(--matrix-green);
+    color: var(--matrix-green);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    text-decoration: none;
+    font-family: var(--font-terminal);
+    font-size: var(--font-size-terminal);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all var(--anim-normal) ease;
+    margin: var(--spacing-xs) var(--spacing-sm) var(--spacing-xs) 0;
+}
+
+.terminal-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--matrix-green);
+    transition: left var(--anim-normal) ease;
+    z-index: -1;
+}
+
+.terminal-btn:hover {
+    color: var(--terminal-bg);
+    text-shadow: none;
+    box-shadow: 0 0 20px var(--matrix-green-glow);
+    transform: translateY(-2px);
+}
+
+.terminal-btn:hover::before {
+    left: 0;
+}
+
+.terminal-btn:active {
+    transform: translateY(0);
+}
+
+/* Terminal Button Variants */
+.terminal-btn.danger {
+    border-color: var(--cyber-red);
+    color: var(--cyber-red);
+}
+
+.terminal-btn.danger::before {
+    background: var(--cyber-red);
+}
+
+.terminal-btn.danger:hover {
+    box-shadow: 0 0 20px var(--cyber-red-glow);
+}
+
+.terminal-btn.info {
+    border-color: var(--cyber-cyan);
+    color: var(--cyber-cyan);
+}
+
+.terminal-btn.info::before {
+    background: var(--cyber-cyan);
+}
+
+.terminal-btn.info:hover {
+    box-shadow: 0 0 20px var(--cyber-cyan-glow);
+}
+
+.terminal-btn.warning {
+    border-color: var(--cyber-orange);
+    color: var(--cyber-orange);
+}
+
+.terminal-btn.warning::before {
+    background: var(--cyber-orange);
+}
+
+/* Terminal Forms */
+.terminal-form {
+    background: var(--terminal-bg-secondary);
+    border: 1px solid var(--matrix-green-dark);
+    padding: var(--spacing-lg);
+    margin: var(--spacing-md) 0;
+}
+
+.terminal-input {
+    width: 100%;
+    background: var(--terminal-bg);
+    border: 1px solid var(--matrix-green-dark);
+    color: var(--terminal-text);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-family: var(--font-terminal);
+    font-size: var(--font-size-terminal);
+    margin-bottom: var(--spacing-md);
+    transition: all var(--anim-normal) ease;
+}
+
+.terminal-input:focus {
+    outline: none;
+    border-color: var(--matrix-green);
+    box-shadow: 0 0 10px var(--matrix-green-shadow);
+    text-shadow: var(--text-glow);
+}
+
+.terminal-input::placeholder {
+    color: var(--terminal-text-muted);
+}
+
+.terminal-label {
+    display: block;
+    color: var(--terminal-text-bright);
+    margin-bottom: var(--spacing-xs);
+    font-weight: 500;
+}
+
+.terminal-label::before {
+    content: '> ';
+    color: var(--cyber-cyan);
+}
+
+/* Terminal Lists */
+.terminal-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--spacing-md) 0;
+}
+
+.terminal-list li {
+    padding: var(--spacing-xs) 0;
+    border-bottom: 1px solid var(--matrix-green-dark);
+    color: var(--terminal-text-dim);
+    position: relative;
+    padding-left: var(--spacing-lg);
+}
+
+.terminal-list li::before {
+    content: '▶ ';
+    color: var(--matrix-green);
+    position: absolute;
+    left: 0;
+}
+
+.terminal-list li:hover {
+    color: var(--terminal-text-bright);
+    background: rgba(0, 255, 0, 0.05);
+}
+
+/* Terminal Tables */
+.terminal-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--spacing-md) 0;
+    background: var(--terminal-bg-secondary);
+    border: 1px solid var(--matrix-green-dark);
+}
+
+.terminal-table th,
+.terminal-table td {
+    padding: var(--spacing-sm) var(--spacing-md);
+    text-align: left;
+    border-bottom: 1px solid var(--matrix-green-dark);
+    border-right: 1px solid var(--matrix-green-dark);
+}
+
+.terminal-table th {
+    background: var(--terminal-bg-tertiary);
+    color: var(--matrix-green-bright);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.terminal-table td {
+    color: var(--terminal-text-dim);
+}
+
+.terminal-table tr:hover td {
+    background: rgba(0, 255, 0, 0.05);
+    color: var(--terminal-text-bright);
+}
+
+/* Terminal Progress Bars */
+.terminal-progress {
+    width: 100%;
+    height: 20px;
+    background: var(--terminal-bg-tertiary);
+    border: 1px solid var(--matrix-green-dark);
+    margin: var(--spacing-sm) 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.terminal-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--matrix-green), var(--matrix-green-bright));
+    transition: width var(--anim-slow) ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.terminal-progress-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: progress-shine 2s linear infinite;
+}
+
+/* Terminal Alerts */
+.terminal-alert {
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+    border-left: 4px solid var(--matrix-green);
+    background: rgba(0, 255, 0, 0.1);
+    color: var(--terminal-text-bright);
+    position: relative;
+}
+
+.terminal-alert.error {
+    border-left-color: var(--cyber-red);
+    background: rgba(255, 0, 64, 0.1);
+    color: var(--terminal-text-error);
+}
+
+.terminal-alert.warning {
+    border-left-color: var(--cyber-orange);
+    background: rgba(255, 128, 0, 0.1);
+    color: var(--terminal-text-warning);
+}
+
+.terminal-alert.info {
+    border-left-color: var(--cyber-cyan);
+    background: rgba(0, 255, 255, 0.1);
+    color: var(--terminal-text-info);
+}
+
+/* Terminal Loading Animations */
+.terminal-loading {
+    display: inline-block;
+    color: var(--matrix-green);
+}
+
+.terminal-loading::after {
+    content: '▌';
+    animation: cursor-blink 1s infinite;
+    margin-left: 2px;
+}
+
+.terminal-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--matrix-green-dark);
+    border-radius: 50%;
+    border-top-color: var(--matrix-green);
+    animation: spin 1s linear infinite;
+}
+
+/* Terminal Status Indicators */
+.terminal-status {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: var(--spacing-xs);
+    animation: pulse 2s infinite;
+}
+
+.terminal-status.online {
+    background: var(--matrix-green);
+    box-shadow: 0 0 10px var(--matrix-green-glow);
+}
+
+.terminal-status.offline {
+    background: var(--cyber-red);
+    box-shadow: 0 0 10px var(--cyber-red-glow);
+}
+
+.terminal-status.warning {
+    background: var(--cyber-orange);
+    box-shadow: 0 0 10px rgba(255, 128, 0, 0.8);
+}
+
+/* Terminal Grid System */
+.terminal-grid {
+    display: grid;
+    gap: var(--spacing-lg);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.terminal-grid-item {
+    background: var(--terminal-bg-secondary);
+    border: 1px solid var(--matrix-green-dark);
+    padding: var(--spacing-lg);
+    transition: all var(--anim-normal) ease;
+}
+
+.terminal-grid-item:hover {
+    border-color: var(--matrix-green);
+    box-shadow: 0 5px 15px var(--matrix-green-shadow);
+}
+
+/* Terminal Footer */
+.terminal-footer {
+    background: var(--terminal-bg-secondary);
+    border-top: 2px solid var(--matrix-green);
+    padding: var(--spacing-lg);
+    margin-top: var(--spacing-xxl);
+    text-align: center;
+    color: var(--terminal-text-muted);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    :root {
+        --font-size-terminal: 12px;
+        --spacing-sm: 0.25rem;
+        --spacing-md: 0.5rem;
+        --spacing-lg: 1rem;
+        --spacing-xl: 1.5rem;
+    }
+    
+    .terminal-brand {
+        font-size: 1.8rem;
+    }
+    
+    .terminal-nav {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+    
+    .terminal-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .terminal-section {
+        padding: var(--spacing-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .terminal-brand {
+        font-size: 1.5rem;
+    }
+    
+    .terminal-title {
+        font-size: 1.4rem;
+    }
+    
+    .terminal-subtitle {
+        font-size: 1.1rem;
+    }
+}
+
+/* Terminal Animations */
+@keyframes scanlines {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(4px); }
+}
+
+@keyframes matrix-bg {
+    0% { opacity: 0.3; }
+    100% { opacity: 0.7; }
+}
+
+@keyframes terminal-sweep {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+@keyframes logo-pulse {
+    0% { text-shadow: var(--text-glow); }
+    100% { text-shadow: var(--strong-glow); }
+}
+
+@keyframes cursor-blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+@keyframes border-flow {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 0% 100%; }
+}
+
+@keyframes border-glow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes progress-shine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Terminal Theme Toggle */
+.terminal-theme-toggle {
+    position: fixed;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    z-index: 1001;
+    background: var(--terminal-bg-secondary);
+    border: 1px solid var(--matrix-green);
+    color: var(--matrix-green);
+    padding: var(--spacing-sm);
+    cursor: pointer;
+    font-family: var(--font-terminal);
+    transition: all var(--anim-normal) ease;
+}
+
+.terminal-theme-toggle:hover {
+    background: var(--matrix-green);
+    color: var(--terminal-bg);
+    box-shadow: 0 0 15px var(--matrix-green-glow);
+}
+
+/* Existing Content Styling in Terminal Mode */
+.terminal-theme .container {
+    background: transparent;
+    max-width: none;
+    padding: 0;
+}
+
+.terminal-theme .header {
+    background: linear-gradient(180deg, var(--terminal-bg) 0%, var(--terminal-bg-secondary) 100%);
+    border: 1px solid var(--matrix-green-dark);
+    color: var(--terminal-text);
+    position: relative;
+}
+
+.terminal-theme .header h1 {
+    color: var(--matrix-green-bright);
+    text-shadow: var(--strong-glow);
+    font-family: var(--font-terminal);
+}
+
+.terminal-theme .header .subtitle {
+    color: var(--terminal-text-bright);
+    font-family: var(--font-terminal);
+}
+
+.terminal-theme .tab-button {
+    background: var(--terminal-bg-secondary);
+    border: 1px solid var(--matrix-green-dark);
+    color: var(--terminal-text);
+    font-family: var(--font-terminal);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.terminal-theme .tab-button.active,
+.terminal-theme .tab-button:hover {
+    background: var(--terminal-bg-tertiary);
+    border-color: var(--matrix-green);
+    color: var(--matrix-green-bright);
+    box-shadow: 0 0 10px var(--matrix-green-shadow);
+    text-shadow: var(--text-glow);
+}
+
+/* Universal Button Styling for Terminal Theme */
+.terminal-theme button,
+.terminal-theme input[type="submit"],
+.terminal-theme input[type="button"],
+.terminal-theme .btn {
+    background: var(--terminal-bg-secondary) !important;
+    border: 1px solid var(--matrix-green-dark) !important;
+    color: var(--terminal-text) !important;
+    font-family: var(--font-terminal) !important;
+    font-weight: normal !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    padding: 8px 16px !important;
+    border-radius: 2px !important;
+    box-shadow: inset 0 0 0 1px var(--terminal-bg-tertiary) !important;
+    transition: all var(--anim-fast) ease !important;
+}
+
+.terminal-theme button:hover,
+.terminal-theme input[type="submit"]:hover,
+.terminal-theme input[type="button"]:hover,
+.terminal-theme .btn:hover {
+    background: var(--terminal-bg-tertiary) !important;
+    border-color: var(--matrix-green) !important;
+    color: var(--matrix-green-bright) !important;
+    box-shadow: 0 0 8px var(--matrix-green-shadow), inset 0 0 0 1px var(--matrix-green-dark) !important;
+    text-shadow: var(--text-glow) !important;
+    transform: translateY(-1px) !important;
+}
+
+.terminal-theme button:active,
+.terminal-theme input[type="submit"]:active,
+.terminal-theme input[type="button"]:active,
+.terminal-theme .btn:active {
+    transform: translateY(0px) !important;
+    box-shadow: inset 0 2px 4px var(--terminal-bg) !important;
+}
+
+/* Universal Text Styling for Terminal Theme */
+.terminal-theme h1,
+.terminal-theme h2,
+.terminal-theme h3,
+.terminal-theme h4,
+.terminal-theme h5,
+.terminal-theme h6 {
+    color: var(--matrix-green-bright) !important;
+    text-shadow: var(--text-glow) !important;
+    font-family: var(--font-terminal) !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+    letter-spacing: 2px !important;
+    border-left: 3px solid var(--matrix-green) !important;
+    padding-left: 12px !important;
+    margin: 1rem 0 !important;
+}
+
+.terminal-theme p,
+.terminal-theme div,
+.terminal-theme span,
+.terminal-theme li {
+    color: var(--terminal-text) !important;
+    font-family: var(--font-terminal) !important;
+    line-height: var(--line-height-terminal) !important;
+}
+
+.terminal-theme a {
+    color: var(--cyber-cyan) !important;
+    text-decoration: none !important;
+    text-shadow: var(--text-glow) !important;
+    border-bottom: 1px solid var(--cyber-cyan) !important;
+    transition: all var(--anim-fast) ease !important;
+}
+
+.terminal-theme a:hover {
+    color: var(--matrix-green-bright) !important;
+    border-bottom-color: var(--matrix-green-bright) !important;
+    text-shadow: var(--strong-glow) !important;
+}
+
+/* Remove any remaining blue/non-terminal colors */
+.terminal-theme .primary-color,
+.terminal-theme .text-blue,
+.terminal-theme .bg-blue {
+    color: var(--matrix-green) !important;
+    background: var(--terminal-bg-secondary) !important;
+    border-color: var(--matrix-green-dark) !important;
+}
+
+/* Form Elements Terminal Styling */
+.terminal-theme input,
+.terminal-theme textarea,
+.terminal-theme select {
+    background: var(--terminal-bg-secondary) !important;
+    border: 1px solid var(--matrix-green-dark) !important;
+    color: var(--terminal-text) !important;
+    font-family: var(--font-terminal) !important;
+    padding: 8px 12px !important;
+    border-radius: 2px !important;
+    box-shadow: inset 0 0 0 1px var(--terminal-bg-tertiary) !important;
+}
+
+.terminal-theme input:focus,
+.terminal-theme textarea:focus,
+.terminal-theme select:focus {
+    border-color: var(--matrix-green) !important;
+    box-shadow: 0 0 8px var(--matrix-green-shadow), inset 0 0 0 1px var(--matrix-green-dark) !important;
+    outline: none !important;
+}
+
+.terminal-theme input::placeholder,
+.terminal-theme textarea::placeholder {
+    color: var(--terminal-text-muted) !important;
+    opacity: 0.8 !important;
+}
+
+/* Terminal Cards and Containers */
+.terminal-theme .card,
+.terminal-theme .container,
+.terminal-theme .panel {
+    background: var(--terminal-bg-secondary) !important;
+    border: 1px solid var(--matrix-green-dark) !important;
+    box-shadow: 0 0 10px var(--terminal-bg), inset 0 0 0 1px var(--terminal-bg-tertiary) !important;
+}
+
+/* Terminal Navigation */
+.terminal-theme nav,
+.terminal-theme .nav,
+.terminal-theme .navbar {
+    background: var(--terminal-bg-secondary) !important;
+    border-bottom: 2px solid var(--matrix-green-dark) !important;
+}
+
+.terminal-theme .nav-link,
+.terminal-theme .navbar-nav .nav-link {
+    color: var(--terminal-text) !important;
+    font-family: var(--font-terminal) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+
+.terminal-theme .nav-link:hover,
+.terminal-theme .navbar-nav .nav-link:hover,
+.terminal-theme .nav-link.active {
+    color: var(--matrix-green-bright) !important;
+    text-shadow: var(--text-glow) !important;
+}
+
+.terminal-theme .network-content {
+    background: var(--terminal-bg-secondary);
+    border: 1px solid var(--matrix-green-dark);
+}
+
+.terminal-theme .network-header {
+    background: linear-gradient(135deg, var(--terminal-bg-tertiary), var(--terminal-bg-secondary));
+    border-bottom: 2px solid var(--matrix-green);
+    color: var(--terminal-text);
+}
+
+.terminal-theme .network-header h2 {
+    color: var(--matrix-green-bright);
+    text-shadow: var(--text-glow);
+    font-family: var(--font-terminal);
+}
+
+.terminal-theme .network-header .network-description {
+    color: var(--terminal-text-bright);
+    font-family: var(--font-terminal);
+}
+
+.terminal-theme .command-category {
+    background: var(--terminal-bg-secondary);
+    border: 1px solid var(--matrix-green-dark);
+}
+
+.terminal-theme .category-header {
+    background: var(--terminal-bg-tertiary);
+    color: var(--matrix-green-bright);
+    border-bottom: 1px solid var(--matrix-green);
+    font-family: var(--font-terminal);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.terminal-theme .command-item {
+    background: var(--terminal-bg);
+    border-bottom: 1px solid var(--matrix-green-dark);
+    color: var(--terminal-text);
+}
+
+.terminal-theme .command-name {
+    color: var(--matrix-green);
+    text-shadow: var(--text-glow);
+    font-family: var(--font-terminal);
+}
+
+.terminal-theme .command-description {
+    color: var(--terminal-text-bright);
+    font-family: var(--font-terminal);
+}
+
+.terminal-theme .command-details {
+    background: var(--terminal-bg-secondary);
+    color: var(--terminal-text-dim);
+    font-family: var(--font-terminal);
+}
+
+.terminal-theme .detail-label {
+    color: var(--cyber-cyan);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.terminal-theme .detail-value {
+    color: var(--terminal-text);
+    font-family: var(--font-terminal);
+    background: var(--terminal-bg-tertiary);
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.2rem;
+    border: 1px solid var(--matrix-green-dark);
+}
+
+.terminal-theme .auth-container {
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--matrix-green);
+    /* backdrop-filter: blur(5px); */ /* Removed blur for clarity */
+}
+
+.terminal-theme .auth-button {
+    background: transparent;
+    border: 1px solid var(--matrix-green);
+    color: var(--matrix-green);
+    font-family: var(--font-terminal);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all var(--anim-normal) ease;
+}
+
+.terminal-theme .auth-button:hover {
+    background: var(--matrix-green);
+    color: var(--terminal-bg);
+    box-shadow: 0 0 15px var(--matrix-green-glow);
+}
+
+/* Modal Styling for Terminal Theme */
+.terminal-theme .modal {
+    background: rgba(0, 0, 0, 0.95);
+    /* backdrop-filter: blur(10px); */ /* Removed blur for clarity */
+}
+
+.terminal-theme .modal-content {
+    background: var(--terminal-bg-secondary);
+    border: 2px solid var(--matrix-green);
+    color: var(--terminal-text);
+    font-family: var(--font-terminal);
+    box-shadow: 0 0 30px var(--matrix-green-glow);
+}
+
+.terminal-theme .form-input {
+    background: var(--terminal-bg);
+    border: 1px solid var(--matrix-green-dark);
+    color: var(--terminal-text);
+    font-family: var(--font-terminal);
+}
+
+.terminal-theme .form-input:focus {
+    border-color: var(--matrix-green);
+    box-shadow: 0 0 10px var(--matrix-green-shadow);
+    text-shadow: var(--text-glow);
+}
+
+.terminal-theme .leaderboard-table {
+    background: var(--terminal-bg-secondary);
+    border: 1px solid var(--matrix-green);
+    color: var(--terminal-text);
+    font-family: var(--font-terminal);
+}
+
+.terminal-theme .leaderboard-table th {
+    background: var(--terminal-bg-tertiary);
+    color: var(--matrix-green-bright);
+    border-bottom: 2px solid var(--matrix-green);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.terminal-theme .leaderboard-table td {
+    border-bottom: 1px solid var(--matrix-green-dark);
+    color: var(--terminal-text-dim);
+}
+
+.terminal-theme .leaderboard-table tr:hover td {
+    background: rgba(0, 255, 0, 0.05);
+    color: var(--terminal-text-bright);
+}
+
+/* Screen Reader and Focus Enhancements */
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* Enhanced Focus Indicators */
+.terminal-theme *:focus,
+.terminal-theme *:focus-visible {
+    outline: 2px solid var(--matrix-green-bright) !important;
+    outline-offset: 2px !important;
+    box-shadow: var(--strong-glow) !important;
+}
+
+.terminal-theme button:focus,
+.terminal-theme input:focus,
+.terminal-theme textarea:focus,
+.terminal-theme select:focus {
+    background: var(--terminal-bg-secondary) !important;
+    border-color: var(--matrix-green-bright) !important;
+}
+
+/* Skip Link */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--terminal-bg);
+    color: var(--matrix-green);
+    padding: 8px;
+    text-decoration: none;
+    border: 2px solid var(--matrix-green);
+    z-index: 10000;
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
+/* Smooth transitions between themes */
+.terminal-theme * {
+    transition: color var(--anim-normal) ease, 
+                background-color var(--anim-normal) ease, 
+                border-color var(--anim-normal) ease,
+                text-shadow var(--anim-normal) ease,
+                box-shadow var(--anim-normal) ease;
+}
+
+/* Performance Optimizations */
+.terminal-theme .scanline-effect,
+.terminal-theme .matrix-background,
+.terminal-theme .terminal-sweep,
+.terminal-theme .border-flow {
+    will-change: transform, opacity;
+    transform: translateZ(0); /* Force hardware acceleration */
+}
+
+/* Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+    .terminal-theme *,
+    .terminal-theme *::before,
+    .terminal-theme *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    /* Disable resource-intensive animations */
+    .terminal-theme .scanline-effect,
+    .terminal-theme .matrix-background,
+    .terminal-theme .terminal-sweep,
+    .terminal-theme .border-flow,
+    .terminal-theme .border-glow {
+        animation: none !important;
+    }
+    
+    /* Keep essential indicators */
+    .terminal-theme .cursor-blink {
+        animation: cursor-blink-reduced 2s infinite;
+    }
+}
+
+@keyframes cursor-blink-reduced {
+    0%, 80% { opacity: 1; }
+    81%, 100% { opacity: 0.3; }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    :root {
+        --matrix-green: #ffffff;
+        --terminal-text: #ffffff;
+        --terminal-bg: #000000;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body.terminal-theme {
+        background: white !important;
+        color: black !important;
+    }
+    
+    body.terminal-theme::before,
+    body.terminal-theme::after {
+        display: none !important;
+    }
+    
+    .terminal-section,
+    .terminal-card {
+        border: 1px solid #000 !important;
+        background: white !important;
+    }
+}
