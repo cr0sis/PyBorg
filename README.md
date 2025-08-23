@@ -282,9 +282,6 @@ python bot_v2.py network1 &
 python bot_v2.py network2 &
 ```
 
-### Docker (Community)
-Community Docker images may be available - check repository releases.
-
 ### Systemd Service
 Create service files for automatic startup and management.
 
@@ -320,7 +317,3 @@ This project is licensed under the MIT License - see LICENSE file for details.
 - Bug Reports: Use GitHub Issues
 - Feature Requests: Use GitHub Issues
 - Development: Fork and submit PRs
-
-## Credits
-
-Built with love by the IRC community. Special thanks to all contributors and plugin developers.
